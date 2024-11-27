@@ -33,6 +33,7 @@ def update_task():
     
     return redirect('/')
 
+# TODO button to force reload from api
 
 app.run(debug=True)
 

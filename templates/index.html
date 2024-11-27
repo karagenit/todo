@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hello, Jinja2!</title>
+    <title>Google Tasks Organizer</title>
 </head>
 <body>
     <h3>Today's Tasks</h3>
@@ -13,7 +13,8 @@
             Priority: <input type="number" name="priority" value="{{ task.priority }}" max="3" min="1"> <br>
             <textarea name="description">{{ task.description }}</textarea> <br>
             <input type="submit" value="Update Task">
-        </form>    {% endfor %}
+        </form>
+    {% endfor %}
     <h3>Needs Prioritization</h3>
     <p>
         {{ pending_task.title }} <br>
