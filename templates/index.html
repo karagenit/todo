@@ -5,6 +5,7 @@
     <title>Hello, Jinja2!</title>
 </head>
 <body>
+    <h3>Today's Tasks</h3>
     {% for task in tasks %}
         <p>
             {{ task.title }} <br>
@@ -12,5 +13,11 @@
             {{ task.notes }}
         </p>
     {% endfor %}
+    <h3>Needs Prioritization</h3>
+    <p>
+        {{ pending_task.title }} <br>
+        Priority: {{ pending_task.priority }} <br>
+        {{ pending_task.notes }}
+    </p>
 </body>
 </html>
