@@ -41,3 +41,4 @@ Version 01, Starts 01/09/23, Due 01/10/23, Medium Priority, Medium Difficulty, T
 Getting access to the api was a pain. Went to google cloud console and opened project. https://console.cloud.google.com/apis/api/tasks.googleapis.com/credentials?inv=1&invt=Abijtg&project=seraphic-scarab-433719-k7
 Went to enabled APIs then Credentials then Web Task Client. Redirect URLs tried `http://localhost` with and without trailing slash, with and without http**s**. Finally worked with these. Not sure which of the four is necessary. Based on the URL's redirect_uri param it looks like it's `http://localhost:59158/` but you must remove the port number (since port seems random each time). But probalby need to include trailing slash.
 
+Match syntax is only supported in python 3.10 and newer. Brew upgrade python3 didn't work. I have 3.8 in /usr/bin and now 3.13 in /usr/local/bin after brew upgrade. Fricking annoying.
