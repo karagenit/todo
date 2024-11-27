@@ -35,3 +35,9 @@ Version 01, Starts 01/09/23, Due 01/10/23, Medium Priority, Medium Difficulty, T
 3. For each difficulty (Easy, Medium, Hard) select one task sorting first by Due date then by Priority (?)
 
 (?) not sure if it's more important to sort by Due date, Priority, or some combination of the two.
+
+## Devlog
+
+Getting access to the api was a pain. Went to google cloud console and opened project. https://console.cloud.google.com/apis/api/tasks.googleapis.com/credentials?inv=1&invt=Abijtg&project=seraphic-scarab-433719-k7
+Went to enabled APIs then Credentials then Web Task Client. Redirect URLs tried `http://localhost` with and without trailing slash, with and without http**s**. Finally worked with these. Not sure which of the four is necessary. Based on the URL's redirect_uri param it looks like it's `http://localhost:59158/` but you must remove the port number (since port seems random each time). But probalby need to include trailing slash.
+

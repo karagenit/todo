@@ -37,14 +37,14 @@ def main():
     service = build("tasks", "v1", credentials=creds)
 
     # Call the Tasks API
-    results = service.tasklists().list(maxResults=10).execute()
+    results = service.tasks().list(tasklist="MDk5NzIwMDMyNTExNzU4MzkzMjI6MDow", showCompleted=False, maxResults=10).execute()
     items = results.get("items", [])
 
     if not items:
-      print("No task lists found.")
+      print("No tasks found.")
       return
 
-    print("Task lists:")
+    print("Tasks:")
     for item in items:
       print(f"{item['title']} ({item['id']})")
   except HttpError as err:
