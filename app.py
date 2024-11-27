@@ -11,7 +11,7 @@ app = Flask(__name__)
 def index():
     sorted_tasks = sorted(tasks, key=lambda x: x.get('priority', 0), reverse=True)
     top_tasks = sorted_tasks[:3]
-    return render_template('index.html', tasks=tasks)
+    return render_template('index.html', tasks=top_tasks)
 
 app.run(debug=True)
 
