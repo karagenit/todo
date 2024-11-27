@@ -8,6 +8,9 @@ while True:
     user_input = input("> ")
     if user_input == "list":
         for task in tasks:
-            print(task['title'])
+            if 'priority' in task:
+                print(f"{task['title']} ({task['priority']})")
+            else:
+                print(task['title'])
     else:  # Default case
         print("Unknown command")

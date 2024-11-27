@@ -11,6 +11,16 @@ def get_tasks(creds):
     # Call the Tasks API
     results = service.tasks().list(tasklist="MDk5NzIwMDMyNTExNzU4MzkzMjI6MDow", showCompleted=False, maxResults=100).execute()
     items = results.get("items", [])
+    
+    for item in items:
+        notes = item.get('notes', '')
+        desc_fields = [line.strip() for line in notes.splitlines() if line.strip().startswith('#')]
+        for field in desc_fields:
+            if field.startswith('#P:'):
+                try:
+                    item['priority'] = int(field[3:].strip())
+                except ValueError:
+                    pass
+     
     return items
-
 # TODO eventually iterate over the cursor token to get more than 100 results
