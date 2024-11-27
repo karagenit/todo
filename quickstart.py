@@ -37,7 +37,7 @@ def main():
     service = build("tasks", "v1", credentials=creds)
 
     # Call the Tasks API
-    results = service.tasks().list(tasklist="MDk5NzIwMDMyNTExNzU4MzkzMjI6MDow", showCompleted=False, maxResults=10).execute()
+    results = service.tasks().list(tasklist="MDk5NzIwMDMyNTExNzU4MzkzMjI6MDow", showCompleted=False, maxResults=100).execute()
     items = results.get("items", [])
 
     if not items:
@@ -45,6 +45,7 @@ def main():
       return
 
     print("Tasks:")
+    print(f"Number of tasks: {len(items)}")
     for item in items:
       print(f"{item['title']} ({item['id']})")
   except HttpError as err:
