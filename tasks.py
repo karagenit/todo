@@ -22,6 +22,8 @@ def get_tasks(creds):
                     item['priority'] = int(field[3:].strip())
                 except ValueError:
                     pass
+        item['description'] = '<br>'.join([line.strip() for line in notes.splitlines() if not line.strip().startswith('#')])
+        
      
     return items
 # TODO eventually iterate over the cursor token to get more than 100 results
