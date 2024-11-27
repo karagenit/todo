@@ -7,12 +7,13 @@
 <body>
     <h3>Today's Tasks</h3>
     {% for task in tasks %}
-        <p>
-            {{ task.title }} <br>
-            Priority: {{ task.priority }} <br>
-            {{ task.description }}
-        </p>
-    {% endfor %}
+        <form action="/update" method="POST">
+            <input type="hidden" name="task_id" value="{{ task.id }}">
+            <input type="text" name="title" value="{{ task.title }}"> <br>
+            Priority: <input type="number" name="priority" value="{{ task.priority }}" max="3" min="1"> <br>
+            <textarea name="description">{{ task.description }}</textarea> <br>
+            <input type="submit" value="Update Task">
+        </form>    {% endfor %}
     <h3>Needs Prioritization</h3>
     <p>
         {{ pending_task.title }} <br>
