@@ -15,6 +15,7 @@ def get_tasks(creds):
     for item in items:
         notes = item.get('notes', '')
         desc_fields = [line.strip() for line in notes.splitlines() if line.strip().startswith('#')]
+        item['priority'] = 0 # default value
         for field in desc_fields:
             if field.startswith('#P:'):
                 try:

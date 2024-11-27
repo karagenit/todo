@@ -8,9 +8,10 @@ while True:
     user_input = input("> ")
     if user_input == "list":
         for task in tasks:
-            if 'priority' in task:
-                print(f"{task['title']} ({task['priority']})")
-            else:
-                print(task['title'])
+            print(f"{task['title']} ({task['priority']})")
+    elif user_input == "today":
+        sorted_tasks = sorted(tasks, key=lambda x: x.get('priority', 0), reverse=True)
+        for task in sorted_tasks[:3]:
+            print(f"{task['title']} ({task['priority']})")
     else:  # Default case
         print("Unknown command")
