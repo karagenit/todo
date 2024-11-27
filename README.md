@@ -36,6 +36,12 @@ Version 01, Starts 01/09/23, Due 01/10/23, Medium Priority, Medium Difficulty, T
 
 (?) not sure if it's more important to sort by Due date, Priority, or some combination of the two.
 
+## TODO
+
+- Add due and start dates
+- Add new task field
+- Add splitting tasks into subtasks
+
 ## Devlog
 
 Getting access to the api was a pain. Went to google cloud console and opened project. https://console.cloud.google.com/apis/api/tasks.googleapis.com/credentials?inv=1&invt=Abijtg&project=seraphic-scarab-433719-k7
