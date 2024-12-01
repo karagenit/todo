@@ -21,6 +21,8 @@ def update_task():
     title = request.form.get('title')
     description = request.form.get('description')
     priority = request.form.get('priority', type=int)
+    start_date = request.form.get('start_date')
+    due_date = request.form.get('due_date')
 
     # TODO update via google api too, not just in-memory. if an error we should handle it without losing user changes
     
@@ -29,10 +31,11 @@ def update_task():
             task['title'] = title
             task['description'] = description
             task['priority'] = priority
+            task['start_date'] = start_date
+            task['due_date'] = due_date
             break
     
     return redirect('/')
-
 # TODO button to force reload from api
 
 app.run(debug=True)
