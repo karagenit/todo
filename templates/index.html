@@ -10,18 +10,19 @@
     </form>
     
     {% for task_type in tasks %}
-        <h3>{{ task_type.label }}</h3>
-        {% for task in task_type.tasks %}
-        <form action="/update" method="POST">
-            <input type="hidden" name="task_id" value="{{ task.id }}">
-            <input type="text" name="title" value="{{ task.title }}"> <br>
-            Priority: <input type="number" name="priority" value="{{ task.priority }}" max="3" min="1"> <br>
-            Start On: <input type="date" name="start_date" value="{{ task.start_date }}"> <br>
-            Due On: <input type="date" name="due_date" value="{{ task.due_date }}"> <br>
-            <textarea name="description">{{ task.description }}</textarea> <br>
-            <input type="submit" value="Update Task">
-        </form>
-        {% endfor %}
-    {% endfor %}
-</body>
+        <details>
+            <summary>{{ task_type.label }}</summary>
+            {% for task in task_type.tasks %}
+            <form action="/update" method="POST">
+                <input type="hidden" name="task_id" value="{{ task.id }}">
+                <input type="text" name="title" value="{{ task.title }}"> <br>
+                Priority: <input type="number" name="priority" value="{{ task.priority }}" max="3" min="1"> <br>
+                Start On: <input type="date" name="start_date" value="{{ task.start_date }}"> <br>
+                Due On: <input type="date" name="due_date" value="{{ task.due_date }}"> <br>
+                <textarea name="description">{{ task.description }}</textarea> <br>
+                <input type="submit" value="Update Task">
+            </form>
+            {% endfor %}
+        </details>
+    {% endfor %}</body>
 </html>
