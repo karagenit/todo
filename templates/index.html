@@ -10,7 +10,7 @@
     </form>
     
     {% for task_type in tasks %}
-        <details>
+        <details {% if loop.first %}open{% endif %}>
             <summary>{{ task_type.label }}</summary>
             {% for task in task_type.tasks %}
             <form action="/update" method="POST">
