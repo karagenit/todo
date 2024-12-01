@@ -13,8 +13,8 @@ def index():
     today = datetime.now().date()
     startable_tasks = [task for task in tasks if not task.get('start_date') or datetime.strptime(task['start_date'], '%Y-%m-%d').date() <= today]
     priority_tasks = sorted(startable_tasks, key=lambda x: (-x.get('priority', 0), x.get('due_date', '9999-12-31')))
-    due_tasks = sorted([task for task in tasks if task.get('due_date')], 
-                        key=lambda x: datetime.strptime(x['due_date'], '%Y-%m-%d').date()) + [task for task in tasks if not task.get('due_date')]
+    due_tasks = sorted(tasks, key=lambda x: x.get('due_date', '9999-12-31'))
+
     triage_tasks = [task for task in tasks if task.get('priority', 0) == 0]
     values = [
         {'label': 'Priority Tasks', 'tasks': priority_tasks[:3]},
