@@ -1,5 +1,7 @@
 import os.path
 
+from datetime import datetime
+
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -17,11 +19,17 @@ def get_tasks(creds):
         desc_fields = [line.strip() for line in notes.splitlines() if line.strip().startswith('#')]
         item['priority'] = 0 # default value
         for field in desc_fields:
-            if field.startswith('#P:'):
-                try:
+            try:
+                if field.startswith('#P:'):
                     item['priority'] = int(field[3:].strip())
-                except ValueError:
-                    pass
+                elif field.startswith('#D:'):
+                    date_str = field[3:].strip()
+                    item['due_date'] = datetime.strptime(date_str, '%Y-%m-%d').strftime('%Y-%m-%d')
+                elif field.startswith('#S:'):
+                    date_str = field[3:].strip()
+                    item['start_date'] = datetime.strptime(date_str, '%Y-%m-%d').strftime('%Y-%m-%d')
+            except ValueError:
+                pass            
         item['description'] = '<br>'.join([line.strip() for line in notes.splitlines() if not line.strip().startswith('#')])
     
     return items
