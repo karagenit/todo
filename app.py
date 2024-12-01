@@ -1,6 +1,7 @@
 from auth import get_creds
 from tasks import get_tasks
 from flask import Flask, render_template, request, redirect
+from datetime import datetime
 
 creds = get_creds()
 tasks = get_tasks(creds)
@@ -9,11 +10,13 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    sorted_tasks = sorted(tasks, key=lambda x: x.get('priority', 0), reverse=True)
-    top_tasks = sorted_tasks[:3]
-    pending_task = next((task for task in tasks if task.get('priority', 0) == 0), None)
-    
-    return render_template('index.html', tasks=top_tasks, pending_task=pending_task)
+    today = datetime.now().date()
+    startable_tasks = [task for task in tasks if not task.get('start_date') or datetime.strptime(task['start_date'], '%Y-%m-%d').date() <= today]
+    priority_tasks = sorted(startable_tasks, key=lambda x: x.get('priority', 0), reverse=True)[:3]
+    due_tasks = sorted([task for task in tasks if task.get('due_date')], 
+                        key=lambda x: datetime.strptime(x['due_date'], '%Y-%m-%d').date())[:3]
+    triage_tasks = [task for task in tasks if task.get('priority', 0) == 0][:3]
+    return render_template('index.html', tasks=priority_tasks + due_tasks + triage_tasks)
 
 @app.route('/update', methods=['POST'])
 def update_task():

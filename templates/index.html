@@ -5,7 +5,7 @@
     <title>Google Tasks Organizer</title>
 </head>
 <body>
-    <h3>Today's Tasks</h3>
+    <h3>Tasks</h3>
     {% for task in tasks %}
         <form action="/update" method="POST">
             <input type="hidden" name="task_id" value="{{ task.id }}">
@@ -17,11 +17,5 @@
             <input type="submit" value="Update Task">
         </form>
     {% endfor %}
-    <h3>Needs Prioritization</h3>
-    <p>
-        {{ pending_task.title }} <br>
-        Priority: {{ pending_task.priority }} <br>
-        {{ pending_task.description }}
-    </p>
 </body>
 </html>
