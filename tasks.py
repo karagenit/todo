@@ -30,7 +30,7 @@ def get_tasks(creds):
                     item['start_date'] = datetime.strptime(date_str, '%Y-%m-%d').strftime('%Y-%m-%d')
             except ValueError:
                 pass            
-        item['description'] = '<br>'.join([line.strip() for line in notes.splitlines() if not line.strip().startswith('#')])
+        item['description'] = '\n'.join([line.strip() for line in notes.splitlines() if not line.strip().startswith('#')])
     
     return items
 # TODO eventually iterate over the cursor token to get more than 100 results
