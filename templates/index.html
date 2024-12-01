@@ -5,6 +5,10 @@
     <title>Google Tasks Organizer</title>
 </head>
 <body>
+    <form action="/reload" method="GET">
+        <input type="submit" value="Reload Tasks">
+    </form>
+    
     {% for task_type in tasks %}
         <h3>{{ task_type.label }}</h3>
         {% for task in task_type.tasks %}

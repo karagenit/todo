@@ -44,6 +44,12 @@ def update_task():
             break
     
     return redirect('/')
-# TODO button to force reload from api
+
+@app.route('/reload')
+def reload_tasks():
+    global tasks
+    tasks = get_tasks(creds)
+    return redirect('/')
+
 
 app.run(debug=True, port=5001)
