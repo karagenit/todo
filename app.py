@@ -14,7 +14,7 @@ def index():
     startable_tasks = [task for task in tasks if not task.get('start_date') or datetime.strptime(task['start_date'], '%Y-%m-%d').date() <= today]
     priority_tasks = sorted(startable_tasks, key=lambda x: x.get('priority', 0), reverse=True)
     due_tasks = sorted([task for task in tasks if task.get('due_date')], 
-                        key=lambda x: datetime.strptime(x['due_date'], '%Y-%m-%d').date())
+                        key=lambda x: datetime.strptime(x['due_date'], '%Y-%m-%d').date()) + [task for task in tasks if not task.get('due_date')]
     triage_tasks = [task for task in tasks if task.get('priority', 0) == 0]
     values = [
         {'label': 'Priority Tasks', 'tasks': priority_tasks[:3]},
@@ -46,4 +46,4 @@ def update_task():
     return redirect('/')
 # TODO button to force reload from api
 
-app.run(debug=True)
+app.run(debug=True, port=5001)
