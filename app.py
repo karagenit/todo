@@ -12,11 +12,16 @@ app = Flask(__name__)
 def index():
     today = datetime.now().date()
     startable_tasks = [task for task in tasks if not task.get('start_date') or datetime.strptime(task['start_date'], '%Y-%m-%d').date() <= today]
-    priority_tasks = sorted(startable_tasks, key=lambda x: x.get('priority', 0), reverse=True)[:3]
+    priority_tasks = sorted(startable_tasks, key=lambda x: x.get('priority', 0), reverse=True)
     due_tasks = sorted([task for task in tasks if task.get('due_date')], 
-                        key=lambda x: datetime.strptime(x['due_date'], '%Y-%m-%d').date())[:3]
-    triage_tasks = [task for task in tasks if task.get('priority', 0) == 0][:3]
-    return render_template('index.html', tasks=priority_tasks + due_tasks + triage_tasks)
+                        key=lambda x: datetime.strptime(x['due_date'], '%Y-%m-%d').date())
+    triage_tasks = [task for task in tasks if task.get('priority', 0) == 0]
+    values = [
+        {'label': 'Priority Tasks', 'tasks': priority_tasks[:3]},
+        {'label': 'Due Soon', 'tasks': due_tasks[:3]},
+        {'label': 'Needs Triage', 'tasks': triage_tasks[:3]}
+    ]
+    return render_template('index.html', tasks=values)
 
 @app.route('/update', methods=['POST'])
 def update_task():

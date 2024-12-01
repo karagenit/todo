@@ -5,8 +5,9 @@
     <title>Google Tasks Organizer</title>
 </head>
 <body>
-    <h3>Tasks</h3>
-    {% for task in tasks %}
+    {% for task_type in tasks %}
+        <h3>{{ task_type.label }}</h3>
+        {% for task in task_type.tasks %}
         <form action="/update" method="POST">
             <input type="hidden" name="task_id" value="{{ task.id }}">
             <input type="text" name="title" value="{{ task.title }}"> <br>
@@ -16,6 +17,7 @@
             <textarea name="description">{{ task.description }}</textarea> <br>
             <input type="submit" value="Update Task">
         </form>
+        {% endfor %}
     {% endfor %}
 </body>
 </html>
