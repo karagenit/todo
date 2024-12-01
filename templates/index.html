@@ -9,9 +9,32 @@
     <form action="/reload" method="GET">
         <input type="submit" value="Reload Tasks">
     </form>
-    
+
+    <nav>
+        {% for task_type in tasks %}
+            <button onclick="showTaskType('task-{{ task_type.id }}')">
+                {{ task_type.label }}
+            </button>
+        {% endfor %}
+    </nav>
+    <script>
+        function showTaskType(id) {
+            const taskDivs = document.querySelectorAll('[id^="task-"]');
+            taskDivs.forEach(div => div.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+        }
+        // Show first task type by default
+        window.onload = function() {
+            const firstTaskDiv = document.querySelector('[id^="task-"]');
+            if (firstTaskDiv) {
+                const taskDivs = document.querySelectorAll('[id^="task-"]');
+                taskDivs.forEach(div => div.style.display = 'none');
+                firstTaskDiv.style.display = 'block';
+            }
+        }
+    </script>    
     {% for task_type in tasks %}
-        <div id="{{ task_type.id }}">
+        <div id="task-{{ task_type.id }}">
             <h2>{{ task_type.label }}</h2>
             {% for task in task_type.tasks %}
             <form action="/update" method="POST" class="task">
