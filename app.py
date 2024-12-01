@@ -17,9 +17,9 @@ def index():
 
     triage_tasks = [task for task in tasks if task.get('priority', 0) == 0]
     values = [
-        {'label': 'Priority Tasks', 'tasks': priority_tasks[:3]},
-        {'label': 'Due Soon', 'tasks': due_tasks[:3]},
-        {'label': 'Needs Triage', 'tasks': triage_tasks[:3]}
+        {'id': 'priority', 'label': 'Priority Tasks', 'tasks': priority_tasks[:3]},
+        {'id': 'due', 'label': 'Due Soon', 'tasks': due_tasks[:3]},
+        {'id': 'triage', 'label': 'Needs Triage', 'tasks': triage_tasks[:3]}
     ]
     return render_template('index.html', tasks=values)
 

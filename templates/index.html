@@ -11,8 +11,8 @@
     </form>
     
     {% for task_type in tasks %}
-        <details {% if loop.first %}open{% endif %}>
-            <summary>{{ task_type.label }}</summary>
+        <div id="{{ task_type.id }}">
+            <h2>{{ task_type.label }}</h2>
             {% for task in task_type.tasks %}
             <form action="/update" method="POST" class="task">
                 <input type="hidden" name="task_id" value="{{ task.id }}">
@@ -24,6 +24,6 @@
                 <input type="submit" value="Update Task">
             </form>
             {% endfor %}
-        </details>
+        </div>
     {% endfor %}</body>
 </html>
