@@ -1,5 +1,5 @@
 from auth import get_creds
-from tasks import get_tasks
+from tasks import get_tasks, patch_task
 from flask import Flask, render_template, request, redirect
 from datetime import datetime
 
@@ -32,7 +32,7 @@ def update_task():
     start_date = request.form.get('start_date')
     due_date = request.form.get('due_date')
 
-    # TODO update via google api too, not just in-memory. if an error we should handle it without losing user changes
+    patch_task(creds, task_id, title, description, priority, start_date, due_date)
     
     for task in tasks:
         if task['id'] == task_id:
@@ -50,6 +50,5 @@ def reload_tasks():
     global tasks
     tasks = get_tasks(creds)
     return redirect('/')
-
 
 app.run(debug=True, port=5001)
