@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Google Tasks Organizer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </head>
 <body>
     <form action="/reload" method="GET">
@@ -17,22 +18,7 @@
             </button>
         {% endfor %}
     </nav>
-    <script>
-        function showTaskType(id) {
-            const taskDivs = document.querySelectorAll('[id^="task-"]');
-            taskDivs.forEach(div => div.style.display = 'none');
-            document.getElementById(id).style.display = 'block';
-        }
-        // Show first task type by default
-        window.onload = function() {
-            const firstTaskDiv = document.querySelector('[id^="task-"]');
-            if (firstTaskDiv) {
-                const taskDivs = document.querySelectorAll('[id^="task-"]');
-                taskDivs.forEach(div => div.style.display = 'none');
-                firstTaskDiv.style.display = 'block';
-            }
-        }
-    </script>    
+   
     {% for task_type in tasks %}
         <div id="task-{{ task_type.id }}">
             <h2>{{ task_type.label }}</h2>
