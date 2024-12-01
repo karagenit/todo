@@ -14,7 +14,7 @@
         <details {% if loop.first %}open{% endif %}>
             <summary>{{ task_type.label }}</summary>
             {% for task in task_type.tasks %}
-            <form action="/update" method="POST">
+            <form action="/update" method="POST" class="task">
                 <input type="hidden" name="task_id" value="{{ task.id }}">
                 <input type="text" name="title" value="{{ task.title }}"> <br>
                 Priority: <input type="number" name="priority" value="{{ task.priority }}" max="3" min="1"> <br>
