@@ -35,11 +35,22 @@ def update_task():
     start_date = request.form.get('start_date')
     due_date = request.form.get('due_date')
     action_tomorrow = request.form.get('action_tomorrow')
+    action_complete = request.form.get('action_complete')
+    completed = None
+    status = 'needsAction'
+    due = None
 
     if action_tomorrow == "true":
         start_date = (datetime.now().date() + timedelta(days=1)).strftime('%Y-%m-%d')
 
-    patch_task(creds, task_id, title, description, priority, start_date, due_date)
+    if action_complete == "true":
+        completed = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+        due = completed
+        status = 'completed'
+        tasks[:] = [task for task in tasks if task['id'] != task_id]
+        
+
+    patch_task(creds, task_id, title, description, priority, start_date, due_date, completed, status, due)
     
     for task in tasks:
         if task['id'] == task_id:
@@ -51,7 +62,6 @@ def update_task():
             break
     
     return redirect('/')
-
 @app.route('/reload')
 def reload_tasks():
     global tasks

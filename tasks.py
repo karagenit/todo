@@ -35,21 +35,27 @@ def get_tasks(creds):
     return items
 # TODO eventually iterate over the cursor token to get more than 100 results
 
-def patch_task(creds, task_id, title, description, priority, start_date, due_date):
+def patch_task(creds, task_id, title, description, priority, start_date, due_date, completed, status, due):
     service = build("tasks", "v1", credentials=creds)
         
     notes = description + "\n"
     if priority is not None:
-        notes += f"#P: {priority}\n"
+        notes += f"#P:{priority}\n"
     if start_date:
-        notes += f"#S: {start_date}\n"
+        notes += f"#S:{start_date}\n"
     if due_date:
-        notes += f"#D: {due_date}\n"
+        notes += f"#D:{due_date}\n"
     
     task = {
         'title': title,
-        'notes': notes.strip()
+        'notes': notes.strip(),
+        'completed': completed,
+        'status': status,
+        'due': due
     }
+
+    print(task)
+    
     
     result = service.tasks().patch(
         tasklist="MDk5NzIwMDMyNTExNzU4MzkzMjI6MDow",
