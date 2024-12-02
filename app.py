@@ -15,14 +15,10 @@ def index():
     startable_tasks = [task for task in tasks if not task.get('start_date') or datetime.strptime(task['start_date'], '%Y-%m-%d').date() <= today]
     priority_tasks = sorted(startable_tasks, key=lambda x: (-x.get('priority', 0), x.get('due_date', '9999-12-31')))
     due_tasks = sorted(tasks, key=lambda x: x.get('due_date', '9999-12-31'))
-
     triage_tasks = [task for task in tasks if task.get('priority', 0) == 0]
-    values = [
-        {'id': 'priority', 'label': 'Priority Tasks', 'tasks': priority_tasks[:3]},
-        {'id': 'due', 'label': 'Due Soon', 'tasks': due_tasks[:3]},
-        {'id': 'triage', 'label': 'Needs Triage', 'tasks': triage_tasks[:3]}
-    ]
+    values = [priority_tasks[0], due_tasks[0], triage_tasks[0]]
     return render_template('index.html', tasks=values, tomorrow=tomorrow)
+
 @app.route('/update', methods=['POST'])
 def update_task():
     task_id = request.form.get('task_id')

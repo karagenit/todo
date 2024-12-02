@@ -10,30 +10,18 @@
     <form action="/reload" method="GET">
         <input type="submit" value="Reload Tasks">
     </form>
-
-    <nav>
-        {% for task_type in tasks %}
-            <button onclick="showTaskType('task-{{ task_type.id }}')">
-                {{ task_type.label }}
-            </button>
-        {% endfor %}
-    </nav>
    
-    {% for task_type in tasks %}
-        <div id="task-{{ task_type.id }}">
-            <h2>{{ task_type.label }}</h2>
-            {% for task in task_type.tasks %}
-            <form action="/update" method="POST" class="task">
-                <input type="hidden" name="task_id" value="{{ task.id }}">
-                <input type="text" name="title" value="{{ task.title }}"> <br>
-                Priority: <input type="number" name="priority" value="{{ task.priority }}" max="3" min="1"> <br>
-                Start On: <input type="date" name="start_date" value="{{ task.start_date }}"> <br>
-                Due On: <input type="date" name="due_date" value="{{ task.due_date }}"> <br>
-                <textarea name="description">{{ task.description }}</textarea> <br>
-                <input type="submit" value="Update Task">
-                <button type="submit" name="start_date" value="{{ tomorrow }}">Tomorrow</button>
-            </form>
-            {% endfor %}
-        </div>
-    {% endfor %}</body>
+    {% for task in tasks %}
+    <form action="/update" method="POST" class="task">
+        <input type="hidden" name="task_id" value="{{ task.id }}">
+        <input type="text" name="title" value="{{ task.title }}"> <br>
+        Priority: <input type="number" name="priority" value="{{ task.priority }}" max="3" min="1"> <br>
+        Start On: <input type="date" name="start_date" value="{{ task.start_date }}"> <br>
+        Due On: <input type="date" name="due_date" value="{{ task.due_date }}"> <br>
+        <textarea name="description">{{ task.description }}</textarea> <br>
+        <input type="submit" value="Update Task">
+        <button type="submit" name="start_date" value="{{ tomorrow }}">Tomorrow</button>
+    </form>
+    {% endfor %}
+</body>
 </html>
