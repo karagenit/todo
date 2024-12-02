@@ -39,9 +39,9 @@ Version 01, Starts 01/09/23, Due 01/10/23, Medium Priority, Medium Difficulty, T
 ## TODO
 
 - Add new task field
+- show assigned on date, maybe auto-assign action button?
+- add default 'due' date based on priority
 - Add splitting tasks into subtasks
-- complete task & mark complete on a certain date
-- move to tomorrow button
 - delete task button
 - repeating tasks using cron syntax (creates next upon completion)
 

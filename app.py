@@ -22,7 +22,8 @@ def index():
     display_tasks.append(task_queue.pop(0))
     # Get first task that needs to be triaged as well
     task_queue = [task for task in task_queue if task.get('priority', 0) == 0]
-    display_tasks.append(task_queue.pop(0))
+    if task_queue:
+        display_tasks.append(task_queue.pop(0))
     # Render
     return render_template('index.html', tasks=display_tasks)
 
