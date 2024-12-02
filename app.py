@@ -11,12 +11,20 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     today = datetime.now().date()
-    startable_tasks = [task for task in tasks if not task.get('start_date') or datetime.strptime(task['start_date'], '%Y-%m-%d').date() <= today]
-    priority_tasks = sorted(startable_tasks, key=lambda x: (-x.get('priority', 0), x.get('due_date', '9999-12-31')))
-    due_tasks = sorted(tasks, key=lambda x: x.get('due_date', '9999-12-31'))
-    triage_tasks = [task for task in tasks if task.get('priority', 0) == 0]
-    values = [priority_tasks[0], due_tasks[0], triage_tasks[0]]
-    return render_template('index.html', tasks=values)
+    display_tasks = []
+    # Only want to display tasks with either no start date or a start date NOT in the future
+    task_queue = [task for task in tasks if not task.get('start_date') or datetime.strptime(task['start_date'], '%Y-%m-%d').date() <= today]
+    # Get first highest priority task
+    task_queue = sorted(task_queue, key=lambda x: (-x.get('priority', 0), x.get('due_date', '9999-12-31')))
+    display_tasks.append(task_queue.pop(0))
+    # Get first soonest due task
+    task_queue = sorted(task_queue, key=lambda x: x.get('due_date', '9999-12-31'))
+    display_tasks.append(task_queue.pop(0))
+    # Get first task that needs to be triaged as well
+    task_queue = [task for task in task_queue if task.get('priority', 0) == 0]
+    display_tasks.append(task_queue.pop(0))
+    # Render
+    return render_template('index.html', tasks=display_tasks)
 
 @app.route('/update', methods=['POST'])
 def update_task():
