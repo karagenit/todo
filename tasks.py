@@ -52,10 +52,7 @@ def patch_task(creds, task_id, title, description, priority, start_date, due_dat
         'completed': completed,
         'status': status,
         'due': due
-    }
-
-    print(task)
-    
+    }    
     
     result = service.tasks().patch(
         tasklist="MDk5NzIwMDMyNTExNzU4MzkzMjI6MDow",

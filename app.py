@@ -48,7 +48,6 @@ def update_task():
         due = completed
         status = 'completed'
         tasks[:] = [task for task in tasks if task['id'] != task_id]
-        
 
     patch_task(creds, task_id, title, description, priority, start_date, due_date, completed, status, due)
     
@@ -62,6 +61,7 @@ def update_task():
             break
     
     return redirect('/')
+
 @app.route('/reload')
 def reload_tasks():
     global tasks
