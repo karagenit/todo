@@ -20,7 +20,7 @@
         Due On: <input type="date" name="due_date" value="{{ task.due_date }}"> <br>
         <textarea name="description">{{ task.description }}</textarea> <br>
         <input type="submit" value="Update Task">
-        <button type="submit" name="start_date" value="{{ tomorrow }}">Tomorrow</button>
+        <button type="submit" name="action_tomorrow" value="true">Tomorrow</button>
     </form>
     {% endfor %}
 </body>

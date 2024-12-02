@@ -11,13 +11,12 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     today = datetime.now().date()
-    tomorrow = (today + timedelta(days=1)).strftime('%Y-%m-%d')
     startable_tasks = [task for task in tasks if not task.get('start_date') or datetime.strptime(task['start_date'], '%Y-%m-%d').date() <= today]
     priority_tasks = sorted(startable_tasks, key=lambda x: (-x.get('priority', 0), x.get('due_date', '9999-12-31')))
     due_tasks = sorted(tasks, key=lambda x: x.get('due_date', '9999-12-31'))
     triage_tasks = [task for task in tasks if task.get('priority', 0) == 0]
     values = [priority_tasks[0], due_tasks[0], triage_tasks[0]]
-    return render_template('index.html', tasks=values, tomorrow=tomorrow)
+    return render_template('index.html', tasks=values)
 
 @app.route('/update', methods=['POST'])
 def update_task():
@@ -27,6 +26,10 @@ def update_task():
     priority = request.form.get('priority', type=int)
     start_date = request.form.get('start_date')
     due_date = request.form.get('due_date')
+    action_tomorrow = request.form.get('action_tomorrow')
+
+    if action_tomorrow == "true":
+        start_date = (datetime.now().date() + timedelta(days=1)).strftime('%Y-%m-%d')
 
     patch_task(creds, task_id, title, description, priority, start_date, due_date)
     
