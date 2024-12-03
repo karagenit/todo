@@ -9,13 +9,33 @@ body {
     border: 1px solid #ddd;
     background-color: #f9f9f9;
 }
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: row;
+}
+
 input[type="text"], input[type="number"], input[type="date"], textarea {
-    width: 95%;
-    margin-bottom: 1em;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    margin-bottom: 1em;
 }
+
+input[name="title"] {
+    flex: 1 0 12em;
+    margin-right: 1em;
+}
+
+input[name="priority"] {
+    flex: 0 0 2em;
+}
+
 input[type="submit"], button[type="submit"] {
     background-color: #4CAF50;
     color: white;
