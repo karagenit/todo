@@ -1,5 +1,5 @@
 from auth import get_creds
-from tasks import get_tasks, patch_task
+from tasks import get_tasks, patch_task, insert_task
 from flask import Flask, render_template, request, redirect
 from datetime import datetime, timedelta
 
@@ -24,6 +24,8 @@ def index():
     task_queue = [task for task in task_queue if task.get('priority', 0) == 0]
     if task_queue:
         display_tasks.append(task_queue.pop(0))
+    # Add blank one for new task spot
+    display_tasks.append({})
     # Render
     return render_template('index.html', tasks=display_tasks)
 
@@ -50,16 +52,26 @@ def update_task():
         status = 'completed'
         tasks[:] = [task for task in tasks if task['id'] != task_id]
 
-    patch_task(creds, task_id, title, description, priority, start_date, due_date, completed, status, due)
-    
-    for task in tasks:
-        if task['id'] == task_id:
-            task['title'] = title
-            task['description'] = description
-            task['priority'] = priority
-            task['start_date'] = start_date
-            task['due_date'] = due_date
-            break
+    if task_id:
+        patch_task(creds, task_id, title, description, priority, start_date, due_date, completed, status, due)
+        for task in tasks:
+            if task['id'] == task_id:
+                task['title'] = title
+                task['description'] = description
+                task['priority'] = priority
+                task['start_date'] = start_date
+                task['due_date'] = due_date
+                break
+    else:
+        result = insert_task(creds, title, description, priority, start_date, due_date, completed, status, due)
+        tasks.append({
+            'id': result['id'],
+            'title': title,
+            'description': description,
+            'priority': priority,
+            'start_date': start_date,
+            'due_date': due_date
+        })
     
     return redirect('/')
 

@@ -61,3 +61,29 @@ def patch_task(creds, task_id, title, description, priority, start_date, due_dat
     ).execute()
     
     return result
+
+def insert_task(creds, title, description, priority, start_date, due_date, completed, status, due):
+    service = build("tasks", "v1", credentials=creds)
+            
+    notes = description + "\n"
+    if priority is not None:
+        notes += f"#P:{priority}\n"
+    if start_date:
+        notes += f"#S:{start_date}\n"
+    if due_date:
+        notes += f"#D:{due_date}\n"
+    
+    task = {
+        'title': title,
+        'notes': notes.strip(),
+        'completed': completed,
+        'status': status,
+        'due': due
+    }    
+    
+    result = service.tasks().insert(
+        tasklist="MDk5NzIwMDMyNTExNzU4MzkzMjI6MDow",
+        body=task
+    ).execute()
+    
+    return result
