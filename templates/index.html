@@ -14,11 +14,11 @@
     {% for task in tasks %}
     <form action="/update" method="POST" class="task">
         <input type="hidden" name="task_id" value="{{ task.id }}">
-        <input type="text" name="title" value="{{ task.title }}"> <br>
-        Priority: <input type="number" name="priority" value="{{ task.priority }}" max="3" min="1"> <br>
-        Start On: <input type="date" name="start_date" value="{{ task.start_date }}"> <br>
-        Due On: <input type="date" name="due_date" value="{{ task.due_date }}"> <br>
-        <textarea name="description">{{ task.description }}</textarea> <br>
+        <input type="text" name="title" value="{{ task.title }}" placeholder="Task Title">
+        <input type="number" name="priority" value="{{ task.priority }}" max="3" min="1" placeholder="Priority">
+        Start On: <input type="date" name="start_date" value="{{ task.start_date }}">
+        Due On: <input type="date" name="due_date" value="{{ task.due_date }}">
+        <textarea name="description">{{ task.description }}</textarea>
         <input type="submit" value="Update Task">
         <button type="submit" name="action_tomorrow" value="true">Tomorrow</button>
         <button type="submit" name="action_complete" value="true">Complete</button>
