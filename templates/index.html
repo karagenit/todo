@@ -16,14 +16,24 @@
         <input type="hidden" name="task_id" value="{{ task.id }}">
         <div class="form-row">
             <input type="text" name="title" value="{{ task.title }}" placeholder="Task Title">
-            <input type="number" name="priority" value="{{ task.priority }}" max="3" min="1" placeholder="Priority">
+            <input type="number" name="priority" value="{{ task.priority }}" max="3" min="1" placeholder="P">
         </div>
-        Start On: <input type="date" name="start_date" value="{{ task.start_date }}">
-        Due On: <input type="date" name="due_date" value="{{ task.due_date }}">
+        <div class="form-row">
+            <div class="form-row">
+                <span>Start:</span>
+                <input type="date" name="start_date" value="{{ task.start_date }}">
+            </div>
+            <div class="form-row">
+                <span>Due:</span>
+                <input type="date" name="due_date" value="{{ task.due_date }}">
+            </div>
+        </div>
         <textarea name="description">{{ task.description }}</textarea>
-        <input type="submit" value="Update Task">
-        <button type="submit" name="action_tomorrow" value="true">Tomorrow</button>
-        <button type="submit" name="action_complete" value="true">Complete</button>
+        <div class="form-row">
+            <input type="submit" value="Update Task">
+            <button type="submit" name="action_tomorrow" value="true">Tomorrow</button>
+            <button type="submit" name="action_complete" value="true">Complete</button>
+        </div>
     </form>
     {% endfor %}
 </body>

@@ -15,16 +15,25 @@ form {
     flex-direction: column;
 }
 
+.form-col {
+    display: flex;
+    flex-direction: column;
+}
+
 .form-row {
     display: flex;
     flex-direction: row;
+    margin-bottom: 1em;
+}
+
+.form-row .form-row {
+    margin-bottom: 0;
 }
 
 input[type="text"], input[type="number"], input[type="date"], textarea {
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    margin-bottom: 1em;
 }
 
 input[name="title"] {
@@ -36,6 +45,16 @@ input[name="priority"] {
     flex: 0 0 2em;
 }
 
+input[name="start_date"] {
+    margin-right: 1em;
+    margin-bottom: 0;
+}
+
+.form-row span {
+    margin-right: 0.5em;
+    align-self: center;
+}
+
 input[type="submit"], button[type="submit"] {
     background-color: #4CAF50;
     color: white;
@@ -44,6 +63,8 @@ input[type="submit"], button[type="submit"] {
     border-radius: 4px;
     cursor: pointer;
     margin-top: 10px;
+    display: flex;
+    margin-right: 1em;
 }
 input[type="submit"]:hover {
     background-color: #45a049;
