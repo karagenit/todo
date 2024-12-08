@@ -10,6 +10,17 @@
     <form action="/reload" method="GET">
         <input type="submit" value="Reload Tasks">
     </form>
+
+    <p>
+        {{ stats.p3 }}
+        {{ stats.p2 }}
+        {{ stats.p1 }}
+        {{ stats.p0 }}
+        {{ stats.today }}
+        {{ stats.week }}
+        {{ stats.month }}
+
+    </p>
    
     {% for task in tasks %}
     <form action="/update" method="POST" class="task">

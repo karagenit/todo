@@ -11,6 +11,17 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     today = datetime.now().date()
+
+    summary_stats = {
+        'p3': sum(1 for task in tasks if task.get('priority', 0) == 3),
+        'p2': sum(1 for task in tasks if task.get('priority', 0) == 2),
+        'p1': sum(1 for task in tasks if task.get('priority', 0) == 1),
+        'p0': sum(1 for task in tasks if task.get('priority', 0) == 0),
+        'today': sum(1 for task in tasks if task.get('due_date') and today <= datetime.strptime(task['due_date'], '%Y-%m-%d').date() <= today + timedelta(days=1)),
+        'week':  sum(1 for task in tasks if task.get('due_date') and today <= datetime.strptime(task['due_date'], '%Y-%m-%d').date() <= today + timedelta(days=7)),
+        'month': sum(1 for task in tasks if task.get('due_date') and today <= datetime.strptime(task['due_date'], '%Y-%m-%d').date() <= today + timedelta(days=30))
+    }    
+
     display_tasks = []
     # Only want to display tasks with either no start date or a start date NOT in the future
     task_queue = [task for task in tasks if not task.get('start_date') or datetime.strptime(task['start_date'], '%Y-%m-%d').date() <= today]
@@ -27,7 +38,7 @@ def index():
     # Add blank one for new task spot
     display_tasks.append({})
     # Render
-    return render_template('index.html', tasks=display_tasks)
+    return render_template('index.html', tasks=display_tasks, stats=summary_stats)
 
 @app.route('/update', methods=['POST'])
 def update_task():
