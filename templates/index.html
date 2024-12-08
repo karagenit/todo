@@ -47,7 +47,8 @@
         <div class="flex flex-row mb-2">
             <div class="flex flex-row flex-1 items-center">
                 <span class="mr-1.5 text-sm text-gray-700">Start</span>
-                <input class="border rounded border-gray-400 px-1" type="date" name="start_date" value="{{ task.start_date }}">
+                <input class="border rounded border-gray-400 px-1 mr-2" type="date" name="start_date" value="{{ task.start_date }}">
+                <button type="submit" name="action_tomorrow" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 mr-4 rounded">→</button>
             </div>
             <div class="flex flex-row flex-1 items-center">
                 <span class="mr-1.5 text-sm text-gray-700">Due</span>
@@ -57,7 +58,6 @@
         <textarea name="description" class="bg-gray-100 rounded p-1 text-sm text-gray-700">{{ task.description }}</textarea>
         <div class="form-row">
             <input type="submit" value="Update Task">
-            <button type="submit" name="action_tomorrow" value="true">Tomorrow</button>
         </div>
     </form>
     {% endfor %}
