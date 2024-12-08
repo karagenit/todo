@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <title>Google Tasks Organizer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </head>
-<body>
+<body class="p-4">
     <form action="/reload" method="GET">
-        <input type="submit" value="Reload Tasks">
+        <button type="submit" class="border border-gray-500 bg-gray-100 px-2 py-1 rounded text-sm">Reload Tasks</button>
     </form>
-
+    
     <table>
         <tr>
             <th>P3</th>
