@@ -37,12 +37,12 @@
 
 
     {% for task in tasks %}
-    <form action="/update" method="POST" class="task">
+    <form action="/update" method="POST" class="border border-gray-500 flex flex-col max-w-[40em] p-2">
         <input type="hidden" name="task_id" value="{{ task.id }}">
-        <div class="form-row">
-            <input type="text" name="title" value="{{ task.title }}" placeholder="Task Title">
-            <input type="number" name="priority" value="{{ task.priority }}" max="3" min="1" placeholder="P">
-        </div>
+        <div class="flex flex-row mb-1">
+            <input type="text" name="title" value="{{ task.title }}" placeholder="Task Title" class="flex-grow mr-1">
+            <input type="number" name="priority" value="{{ task.priority }}" max="3" min="1" placeholder="P" class="w-[3em]">
+        </div>        
         <div class="form-row">
             <div class="form-row">
                 <span>Start:</span>
