@@ -11,16 +11,26 @@
         <input type="submit" value="Reload Tasks">
     </form>
 
-    <p>
-        {{ stats.p3 }}
-        {{ stats.p2 }}
-        {{ stats.p1 }}
-        {{ stats.p0 }}
-        {{ stats.today }}
-        {{ stats.week }}
-        {{ stats.month }}
-
-    </p>
+    <table>
+        <tr>
+            <th>P3</th>
+            <th>P2</th>
+            <th>P1</th>
+            <th>P0</th>
+            <th>Due Today</th>
+            <th>Due This Week</th>
+            <th>Due This Month</th>
+        </tr>
+        <tr>
+            <td>{{ stats.p3 }}</td>
+            <td>{{ stats.p2 }}</td>
+            <td>{{ stats.p1 }}</td>
+            <td>{{ stats.p0 }}</td>
+            <td>{{ stats.today }}</td>
+            <td>{{ stats.week }}</td>
+            <td>{{ stats.month }}</td>
+        </tr>
+    </table>
    
     {% for task in tasks %}
     <form action="/update" method="POST" class="task">
