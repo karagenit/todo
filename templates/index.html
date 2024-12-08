@@ -40,6 +40,7 @@
     <form action="/update" method="POST" class="border border-gray-500 rounded flex flex-col max-w-[40em] p-2 mt-4">
         <input type="hidden" name="task_id" value="{{ task.id }}">
         <div class="flex flex-row mb-2">
+            <button type="submit" name="action_complete" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 mr-4 rounded">✓</button>
             <input type="text" name="title" value="{{ task.title }}" placeholder="Task Title" class="flex-grow mr-4 border-b border-gray-400 focus:outline-none">
             <input type="number" name="priority" value="{{ task.priority }}" max="3" min="1" placeholder="P#" class="w-9 border rounded border-gray-400 pl-1 focus:outline-none">
         </div>        
@@ -57,7 +58,6 @@
         <div class="form-row">
             <input type="submit" value="Update Task">
             <button type="submit" name="action_tomorrow" value="true">Tomorrow</button>
-            <button type="submit" name="action_complete" value="true">Complete</button>
         </div>
     </form>
     {% endfor %}
