@@ -51,8 +51,9 @@
             <div class="flex flex-row flex-1 items-center">
                 <span class="mr-1.5 text-sm text-gray-700">Due</span>
                 <input class="border rounded border-gray-400 px-1" type="date" name="due_date" value="{{ task.due_date }}">
-            </div>        </div>
-        <textarea name="description">{{ task.description }}</textarea>
+            </div>        
+        </div>
+        <textarea name="description" class="bg-gray-100 rounded p-1 text-sm text-gray-700">{{ task.description }}</textarea>
         <div class="form-row">
             <input type="submit" value="Update Task">
             <button type="submit" name="action_tomorrow" value="true">Tomorrow</button>
