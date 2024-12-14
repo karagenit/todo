@@ -34,7 +34,7 @@
     </table>     
     
     {% for task in tasks %}
-    <form action="/update" method="POST" class="border border-gray-500 rounded flex flex-col max-w-[40em] p-2 mt-4">
+    <form action="/update" method="POST" class="border border-gray-500 rounded flex flex-col max-w-[48em] p-2 mt-4">
         <input type="hidden" name="task_id" value="{{ task.id }}">
         <div class="flex flex-row mb-2">
             <input type="text" name="title" value="{{ task.title }}" placeholder="Task Title" class="flex-grow mr-2 border-b border-gray-400 focus:outline-none pl-1 font-medium">
@@ -43,20 +43,20 @@
             <button type="submit" name="action_complete" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded ml-2">✓</button>
             {% endif %}
         </div>        
-        <div class="flex flex-row mb-2">
+        <div class="flex flex-row mb-2 gap-4">
             <div class="flex flex-row flex-1 items-center">
                 <span class="mr-1.5 text-sm text-gray-700">Start</span>
-                <input class="border rounded border-gray-400 px-1 mr-2 h-7 w-28 text-sm" type="date" name="start_date" value="{{ task.start_date }}">
-                <button type="submit" name="action_tomorrow" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 mr-4 rounded h-7">→</button>
+                <input class="border rounded border-gray-400 px-1 mr-2 h-7 text-sm" type="date" name="start_date" value="{{ task.start_date }}">
+                <button type="submit" name="action_tomorrow" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded h-7">→</button>
             </div>
             <div class="flex flex-row flex-1 items-center">
                 <span class="mr-1.5 text-sm text-gray-700">Due</span>
-                <input class="border rounded border-gray-400 px-1 h-7 w-28 text-sm" type="date" name="due_date" value="{{ task.due_date }}">
+                <input class="border rounded border-gray-400 px-1 h-7 text-sm" type="date" name="due_date" value="{{ task.due_date }}">
                 <button type="button" onclick="this.parentElement.querySelector('input[name=due_date]').valueAsDate = new Date(new Date().toLocaleDateString())" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded ml-2 h-7 w-7">!</button>
             </div>
             <div class="flex flex-row flex-1 items-center">
                 <span class="mr-1.5 text-sm text-gray-700">Repeat</span>
-                <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2" type="text" name="repeat" value="{{ task.repeat }}">
+                <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2" type="text" name="repeat" value="{{ task.repeat }}" placeholder="* * * * *">
             </div>     
         </div>
         <textarea name="description" class="bg-gray-100 rounded p-1 text-sm text-gray-700">{{ task.description }}</textarea>
