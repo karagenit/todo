@@ -53,7 +53,11 @@
                 <span class="mr-1.5 text-sm text-gray-700">Due</span>
                 <input class="border rounded border-gray-400 px-1 h-7 w-28 text-sm" type="date" name="due_date" value="{{ task.due_date }}">
                 <button type="button" onclick="this.parentElement.querySelector('input[name=due_date]').valueAsDate = new Date(new Date().toLocaleDateString())" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded ml-2 h-7 w-7">!</button>
-            </div>        
+            </div>
+            <div class="flex flex-row flex-1 items-center">
+                <span class="mr-1.5 text-sm text-gray-700">Repeat</span>
+                <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2" type="text" name="repeat" value="{{ task.repeat }}">
+            </div>     
         </div>
         <textarea name="description" class="bg-gray-100 rounded p-1 text-sm text-gray-700">{{ task.description }}</textarea>
         <div class="form-row hidden mt-2" id="action-bar">
