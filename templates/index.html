@@ -52,8 +52,8 @@
                 <input class="border rounded border-gray-400 px-1 h-7" type="date" name="due_date" value="{{ task.due_date }}">
             </div>        
         </div>
-        <textarea name="description" class="bg-gray-100 rounded p-1 text-sm text-gray-700 mb-2">{{ task.description }}</textarea>
-        <div class="form-row">
+        <textarea name="description" class="bg-gray-100 rounded p-1 text-sm text-gray-700">{{ task.description }}</textarea>
+        <div class="form-row hidden mt-2" id="action-bar">
             <button type="submit" class="border border-green-500 hover:bg-green-100 px-2 py-1 mr-1 rounded text-sm text-green-700">Save</button>
             <button type="button" onclick="window.location.reload()" class="border border-red-500 hover:bg-red-200 px-2 py-1 rounded text-sm text-red-700">Discard</button>
         </div>
