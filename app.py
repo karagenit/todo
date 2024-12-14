@@ -8,6 +8,20 @@ tasks = get_tasks(creds)
 
 app = Flask(__name__)
 
+def task_sort_key(task):
+    if not task.get('due_date'):
+        priority = task.get('priority', 0)
+        if priority == 3:
+            return (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
+        elif priority == 2:
+            return (datetime.now() + timedelta(days=14)).strftime('%Y-%m-%d')
+        elif priority == 1:
+            return (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
+        elif priority == 0:
+            return (datetime.now() + timedelta(days=-7)).strftime('%Y-%m-%d')
+
+    return task.get('due_date', '9999-12-31')
+
 @app.route('/')
 def index():
     today = datetime.now().date()
@@ -23,22 +37,10 @@ def index():
         'month': sum(1 for task in tasks if task.get('due_date') and datetime.strptime(task['due_date'], '%Y-%m-%d').date() <= today + timedelta(days=30))
     }
 
-    display_tasks = []
-    # Only want to display tasks with either no start date or a start date NOT in the future
-    task_queue = [task for task in tasks if not task.get('start_date') or datetime.strptime(task['start_date'], '%Y-%m-%d').date() <= today]
-    # Get first highest priority task
-    task_queue = sorted(task_queue, key=lambda x: (-x.get('priority', 0), x.get('due_date', '9999-12-31')))
-    display_tasks.append(task_queue.pop(0))
-    # Get first soonest due task
-    task_queue = sorted(task_queue, key=lambda x: x.get('due_date', '9999-12-31'))
-    display_tasks.append(task_queue.pop(0))
-    # Get first task that needs to be triaged as well
-    task_queue = [task for task in task_queue if task.get('priority', 0) == 0]
-    if task_queue:
-        display_tasks.append(task_queue.pop(0))
-    # Add blank one for new task spot
-    display_tasks.append({})
-    # Render
+    ready_tasks = [task for task in tasks if not task.get('start_date') or datetime.strptime(task['start_date'], '%Y-%m-%d').date() <= today]
+    sorted_tasks = sorted(ready_tasks, key=task_sort_key)
+    display_tasks = [{}] + sorted_tasks[:5]
+
     return render_template('index.html', tasks=display_tasks, stats=summary_stats)
 
 @app.route('/update', methods=['POST'])
