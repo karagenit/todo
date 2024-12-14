@@ -45,6 +45,7 @@ Version 01, Starts 01/09/23, Due 01/10/23, Medium Priority, Medium Difficulty, T
 - repeating tasks using cron syntax (creates next upon completion)
 - handle auth errors/need to reauth
 - saving empty taks works but probalby fails on api
+- today button doesn't make save button appear"
 
 ## Devlog
 
