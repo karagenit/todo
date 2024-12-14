@@ -33,9 +33,6 @@
         </tr>
     </table>     
     
-    
-
-
     {% for task in tasks %}
     <form action="/update" method="POST" class="border border-gray-500 rounded flex flex-col max-w-[40em] p-2 mt-4">
         <input type="hidden" name="task_id" value="{{ task.id }}">
@@ -47,17 +44,17 @@
         <div class="flex flex-row mb-2">
             <div class="flex flex-row flex-1 items-center">
                 <span class="mr-1.5 text-sm text-gray-700">Start</span>
-                <input class="border rounded border-gray-400 px-1 mr-2 h-6" type="date" name="start_date" value="{{ task.start_date }}">
-                <button type="submit" name="action_tomorrow" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 mr-4 rounded h-6">→</button>
+                <input class="border rounded border-gray-400 px-1 mr-2 h-7" type="date" name="start_date" value="{{ task.start_date }}">
+                <button type="submit" name="action_tomorrow" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 mr-4 rounded h-7">→</button>
             </div>
             <div class="flex flex-row flex-1 items-center">
                 <span class="mr-1.5 text-sm text-gray-700">Due</span>
-                <input class="border rounded border-gray-400 px-1" type="date" name="due_date" value="{{ task.due_date }}">
+                <input class="border rounded border-gray-400 px-1 h-7" type="date" name="due_date" value="{{ task.due_date }}">
             </div>        
         </div>
         <textarea name="description" class="bg-gray-100 rounded p-1 text-sm text-gray-700 mb-2">{{ task.description }}</textarea>
         <div class="form-row">
-            <button type="submit" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 mr-4 rounded">Update Task</button>
+            <button type="submit" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-2 py-1 mr-4 rounded text-sm">Update Task</button>
         </div>
     </form>
     {% endfor %}
