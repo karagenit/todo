@@ -31,8 +31,9 @@ def index():
         'p2': sum(1 for task in tasks if task.get('priority', 0) == 2),
         'p1': sum(1 for task in tasks if task.get('priority', 0) == 1),
         'p0': sum(1 for task in tasks if task.get('priority', 0) == 0),
-        'today': sum(1 for task in tasks if task.get('due_date') and datetime.strptime(task['due_date'], '%Y-%m-%d').date() <= today + timedelta(days=1)),
-        'week':  sum(1 for task in tasks if task.get('due_date') and today + timedelta(days=1) < datetime.strptime(task['due_date'], '%Y-%m-%d').date() <= today + timedelta(days=7)),
+        'overdue': sum(1 for task in tasks if task.get('due_date') and datetime.strptime(task['due_date'], '%Y-%m-%d').date() < today),
+        'today': sum(1 for task in tasks if task.get('due_date') and today <= datetime.strptime(task['due_date'], '%Y-%m-%d').date() < today + timedelta(days=1)),
+        'week':  sum(1 for task in tasks if task.get('due_date') and today + timedelta(days=1) <= datetime.strptime(task['due_date'], '%Y-%m-%d').date() <= today + timedelta(days=7)),
         'month': sum(1 for task in tasks if task.get('due_date') and today + timedelta(days=7) < datetime.strptime(task['due_date'], '%Y-%m-%d').date() <= today + timedelta(days=30))
     }
 
