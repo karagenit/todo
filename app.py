@@ -60,10 +60,10 @@ def index():
 def update_task():
     task_id = request.form.get('task_id')
     title = request.form.get('title')
-    description = request.form.get('description')
+    description = request.form.get('description', '')
     priority = request.form.get('priority', type=int)
-    start_date = request.form.get('start_date')
-    due_date = request.form.get('due_date')
+    start_date = request.form.get('start_date', '')
+    due_date = request.form.get('due_date', '')
     action_tomorrow = request.form.get('action_tomorrow')
     action_complete = request.form.get('action_complete')
     completed = None
@@ -91,7 +91,7 @@ def update_task():
                 break
     else:
         result = insert_task(creds, title, description, priority, start_date, due_date, completed, status, due)
-        tasks.append({
+        tasks.append({ # TODO include parent id here
             'id': result['id'],
             'title': title,
             'description': description,
