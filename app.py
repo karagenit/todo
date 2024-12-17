@@ -47,7 +47,7 @@ def index():
     ready_tasks = [task for task in tasks if should_display_task(task)]
     sorted_tasks = sorted(ready_tasks, key=task_sort_key)
     for task in sorted_tasks:
-        task['children'] = []
+        task['children'] = [{}]
         for potential_child in tasks:
             if potential_child.get('parent') == task['id']:
                 task['children'].append(potential_child)

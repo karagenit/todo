@@ -71,14 +71,22 @@
         </form>
         {% if task.children %}
         <details class="mt-2">
-            <summary class="text-sm text-gray-700 cursor-pointer">{{ task.children|length }} Subtasks</summary>
-            <div class="pl-4 pt-2">
-                <p class="text-sm text-gray-600">
-                    {% for child in task.children %}
-                        {{ child.title }}{% if not loop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
+            <summary class="text-sm text-gray-700 cursor-pointer">{{ task.children|length - 1 }} Subtasks</summary>
+            {% for child in task.children %}
+            <div class="pt-2">
+                <form action="/update" method="POST" class="flex flex-col">
+                    <input type="hidden" name="task_id" value="{{ child.id }}">
+                    <div class="flex flex-row mb-2">
+                        {% if child.id %}
+                        <button type="submit" name="action_complete" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded mr-2 w-7">✓</button>
+                        {% else %}
+                        <button type="submit" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded mr-2 w-7">+</button>
+                        {% endif %}
+                        <input type="text" name="title" value="{{ child.title }}" placeholder="Subtask Title" class="flex-grow mr-2 border-b border-gray-400 focus:outline-none pl-1 text-sm max-w-[60%]">                        
+                    </div> 
+                </form>
             </div>
+            {% endfor %}
         </details>
         {% endif %}
     </div>
