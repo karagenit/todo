@@ -1,5 +1,5 @@
 from auth import get_creds
-from tasks import get_tasks, patch_task, insert_task
+from tasks import get_tasks, patch_task, insert_task, move_task
 from flask import Flask, render_template, request, redirect
 from datetime import datetime, timedelta
 
@@ -64,6 +64,7 @@ def update_task():
     priority = request.form.get('priority', type=int)
     start_date = request.form.get('start_date', '')
     due_date = request.form.get('due_date', '')
+    parent_id = request.form.get('parent_id')
     action_tomorrow = request.form.get('action_tomorrow')
     action_complete = request.form.get('action_complete')
     completed = None
@@ -91,8 +92,11 @@ def update_task():
                 break
     else:
         result = insert_task(creds, title, description, priority, start_date, due_date, completed, status, due)
-        tasks.append({ # TODO include parent id here
+        if parent_id:
+            move_task(creds, result['id'], parent_id)
+        tasks.append({
             'id': result['id'],
+            'parent': parent_id,
             'title': title,
             'description': description,
             'priority': priority,

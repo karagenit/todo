@@ -87,3 +87,12 @@ def insert_task(creds, title, description, priority, start_date, due_date, compl
     ).execute()
     
     return result
+
+def move_task(creds, task_id, parent_id):
+    service = build("tasks", "v1", credentials=creds)
+    result = service.tasks().move(
+        tasklist="MDk5NzIwMDMyNTExNzU4MzkzMjI6MDow",
+        task=task_id,
+        parent=parent_id
+    ).execute()
+    return result

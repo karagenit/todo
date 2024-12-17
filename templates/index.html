@@ -76,6 +76,7 @@
             <div class="pt-2">
                 <form action="/update" method="POST" class="flex flex-col">
                     <input type="hidden" name="task_id" value="{{ child.id }}">
+                    <input type="hidden" name="parent_id" value="{{ task.id }}">
                     <div class="flex flex-row mb-2">
                         {% if child.id %}
                         <button type="submit" name="action_complete" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded mr-2 w-7">✓</button>
