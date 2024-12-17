@@ -8,6 +8,13 @@ tasks = get_tasks(creds)
 
 app = Flask(__name__)
 
+def should_display_task(task):
+    today = datetime.now().date()
+    no_start_date = not task.get('start_date')
+    starts_today_or_earlier = task.get('start_date') and datetime.strptime(task['start_date'], '%Y-%m-%d').date() <= today
+    no_parent = not task.get('parent')
+    return (no_start_date or starts_today_or_earlier) and no_parent
+
 def task_sort_key(task):
     if not task.get('due_date'):
         priority = task.get('priority', 0)
@@ -37,7 +44,7 @@ def index():
         'month': sum(1 for task in tasks if task.get('due_date') and today + timedelta(days=7) < datetime.strptime(task['due_date'], '%Y-%m-%d').date() <= today + timedelta(days=30))
     }
 
-    ready_tasks = [task for task in tasks if not task.get('start_date') or datetime.strptime(task['start_date'], '%Y-%m-%d').date() <= today]
+    ready_tasks = [task for task in tasks if should_display_task(task)]
     sorted_tasks = sorted(ready_tasks, key=task_sort_key)
     display_tasks = [{}] + sorted_tasks[:5]
 
