@@ -69,27 +69,22 @@
                 <button type="button" onclick="window.location.reload()" class="border border-red-500 hover:bg-red-200 px-2 py-1 rounded text-sm text-red-700">Discard</button>
             </div>
         </form>
-        {% if task.children %}
-        <details class="mt-2">
-            <summary class="text-sm text-gray-700 cursor-pointer">{{ task.children|length - 1 }} Subtasks</summary>
-            {% for child in task.children %}
-            <div class="pt-2">
-                <form action="/update" method="POST" class="flex flex-col">
-                    <input type="hidden" name="task_id" value="{{ child.id }}">
-                    <input type="hidden" name="parent_id" value="{{ task.id }}">
-                    <div class="flex flex-row mb-2">
-                        {% if child.id %}
-                        <button type="submit" name="action_complete" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded mr-2 w-7">✓</button>
-                        {% else %}
-                        <button type="submit" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded mr-2 w-7">+</button>
-                        {% endif %}
-                        <input type="text" name="title" value="{{ child.title }}" placeholder="Subtask Title" class="flex-grow mr-2 border-b border-gray-400 focus:outline-none pl-1 text-sm max-w-[60%]">                        
-                    </div> 
-                </form>
-            </div>
-            {% endfor %}
-        </details>
-        {% endif %}
+        {% for child in task.children %}
+        <div class="mt-3">
+            <form action="/update" method="POST" class="flex flex-col">
+                <input type="hidden" name="task_id" value="{{ child.id }}">
+                <input type="hidden" name="parent_id" value="{{ task.id }}">
+                <div class="flex flex-row">
+                    {% if child.id %}
+                    <button type="submit" name="action_complete" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded mr-2 w-6 text-sm">✓</button>
+                    {% else %}
+                    <button type="submit" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded mr-2 w-6 text-sm">+</button>
+                    {% endif %}
+                    <input type="text" name="title" value="{{ child.title }}" placeholder="Subtask Title" class="flex-grow mr-2 border-b border-gray-400 focus:outline-none pl-1 text-sm max-w-[60%]">                        
+                </div> 
+            </form>
+        </div>
+        {% endfor %}
     </div>
     {% endfor %}
 </body>
