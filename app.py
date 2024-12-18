@@ -16,18 +16,21 @@ def should_display_task(task):
     return (no_start_date or starts_today_or_earlier) and no_parent
 
 def task_sort_key(task):
+    sort_key = ''
     if not task.get('due_date'):
         priority = task.get('priority', 0)
         if priority == 3:
-            return (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
+            sort_key = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
         elif priority == 2:
-            return (datetime.now() + timedelta(days=14)).strftime('%Y-%m-%d')
+            sort_key = (datetime.now() + timedelta(days=14)).strftime('%Y-%m-%d')
         elif priority == 1:
-            return (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
+            sort_key = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
         elif priority == 0:
-            return (datetime.now() + timedelta(days=-7)).strftime('%Y-%m-%d')
+            sort_key = (datetime.now() + timedelta(days=-7)).strftime('%Y-%m-%d')
 
-    return task.get('due_date', '9999-12-31')
+    sort_key = task.get('due_date', '9999-12-31')
+    # Add priority to the sort order as a tiebreaker for equal dates. Uses 3-priority so higher priority is first since this is sorted least to greatest. 
+    return sort_key + '-' + str(3 - task.get('priority', 0))
 
 @app.route('/')
 def index():

@@ -48,6 +48,9 @@ Version 01, Starts 01/09/23, Due 01/10/23, Medium Priority, Medium Difficulty, T
 - today button doesn't make save button appear"
 - dont' require priority if clicking complete button
 - allow editing subtask title
+- adjust comment box height dynamically
+- sorting tie breakers by priority
+- auto delete start dates in the past
 
 ## Devlog
 
