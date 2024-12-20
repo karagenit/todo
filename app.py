@@ -27,10 +27,9 @@ def task_sort_key(task):
             sort_key = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
         elif priority == 0:
             sort_key = (datetime.now() + timedelta(days=-7)).strftime('%Y-%m-%d')
-
-    sort_key = task.get('due_date', '9999-12-31')
+    else:
+        sort_key = task.get('due_date')
     # Add priority to the sort order as a tiebreaker for equal dates. Uses 3-priority so higher priority is first since this is sorted least to greatest. 
-    # TODO having some issue with no-due-date P3 showing first... seems like priority field isn't being read correctly??
     return sort_key + '-' + str(3 - task.get('priority', 0))
 
 @app.route('/')
