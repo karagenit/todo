@@ -74,6 +74,9 @@ def update_task():
     status = 'needsAction'
     due = None
 
+    if start_date and datetime.strptime(start_date, '%Y-%m-%d').date() <= datetime.now().date():
+        start_date = ''
+
     if action_tomorrow == "true":
         start_date = (datetime.now().date() + timedelta(days=1)).strftime('%Y-%m-%d')
 
