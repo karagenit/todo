@@ -16,17 +16,21 @@ def should_display_task(task):
     return (no_start_date or starts_today_or_earlier) and no_parent
 
 def task_sort_key(task):
+    start_date = datetime.strptime(task.get('start_date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d')
+    if start_date.date() < datetime.now().date():
+        start_date = datetime.now()
+    
     sort_key = ''
     if not task.get('due_date'):
         priority = task.get('priority', 0)
         if priority == 3:
-            sort_key = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
+            sort_key = (start_date + timedelta(days=7)).strftime('%Y-%m-%d')
         elif priority == 2:
-            sort_key = (datetime.now() + timedelta(days=14)).strftime('%Y-%m-%d')
+            sort_key = (start_date + timedelta(days=14)).strftime('%Y-%m-%d')
         elif priority == 1:
-            sort_key = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
+            sort_key = (start_date + timedelta(days=30)).strftime('%Y-%m-%d')
         elif priority == 0:
-            sort_key = (datetime.now() + timedelta(days=-7)).strftime('%Y-%m-%d')
+            sort_key = (start_date + timedelta(days=-7)).strftime('%Y-%m-%d')
     else:
         sort_key = task.get('due_date')
     # Add priority to the sort order as a tiebreaker for equal dates. Uses 3-priority so higher priority is first since this is sorted least to greatest. 
@@ -116,7 +120,8 @@ def update_task():
     
     # For non-child tasks, we want to set the order of the task
     if not parent_id:
-        sorted_tasks = get_sorted_tasks()
+        sorted_tasks = sorted([task for task in tasks if not task.get('parent')], key=task_sort_key)
+
         task_index = next((i for i, task in enumerate(sorted_tasks) if task['id'] == task_id), -1)
         if task_index > 0:
             previous_task = sorted_tasks[task_index - 1]
