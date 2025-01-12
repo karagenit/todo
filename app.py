@@ -32,6 +32,9 @@ def task_sort_key(task):
     # Add priority to the sort order as a tiebreaker for equal dates. Uses 3-priority so higher priority is first since this is sorted least to greatest. 
     return sort_key + '-' + str(3 - task.get('priority', 0))
 
+def get_sorted_tasks():
+    return sorted([task for task in tasks if should_display_task(task)], key=task_sort_key)
+
 @app.route('/')
 def index():
     today = datetime.now().date()
@@ -47,8 +50,7 @@ def index():
         'month': sum(1 for task in tasks if task.get('due_date') and today + timedelta(days=7) < datetime.strptime(task['due_date'], '%Y-%m-%d').date() <= today + timedelta(days=30))
     }
 
-    ready_tasks = [task for task in tasks if should_display_task(task)]
-    sorted_tasks = sorted(ready_tasks, key=task_sort_key)
+    sorted_tasks = get_sorted_tasks()
     for task in sorted_tasks:
         task['children'] = [{}]
         for potential_child in tasks:
@@ -99,7 +101,7 @@ def update_task():
     else:
         result = insert_task(creds, title, description, priority, start_date, due_date, completed, status, due)
         if parent_id:
-            move_task(creds, result['id'], parent_id)
+            move_task(creds, result['id'], parent_id, None)
         tasks.append({
             'id': result['id'],
             'parent': parent_id,
@@ -109,6 +111,16 @@ def update_task():
             'start_date': start_date,
             'due_date': due_date
         })
+        # Needed below when moving the task
+        task_id = result['id']
+    
+    # For non-child tasks, we want to set the order of the task
+    if not parent_id:
+        sorted_tasks = get_sorted_tasks()
+        task_index = next((i for i, task in enumerate(sorted_tasks) if task['id'] == task_id), -1)
+        if task_index > 0:
+            previous_task = sorted_tasks[task_index - 1]
+            move_task(creds, task_id, None, previous_task['id'])
     
     return redirect('/')
 
