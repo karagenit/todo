@@ -16,7 +16,12 @@ def should_display_task(task):
     return (no_start_date or starts_today_or_earlier) and no_parent
 
 def task_sort_key(task):
-    start_date = datetime.strptime(task.get('start_date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d')
+    start_date_str = task.get('start_date')
+    if not start_date_str:
+        start_date = datetime.now()
+    else:
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+    
     if start_date.date() < datetime.now().date():
         start_date = datetime.now()
     
