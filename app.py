@@ -48,6 +48,7 @@ def get_sorted_tasks():
 def index():
     today = datetime.now().date()
 
+    # TODO need to use the implied due dates from the sorting algo here?
     summary_stats = {
         'p3': sum(1 for task in tasks if task.get('priority', 0) == 3),
         'p2': sum(1 for task in tasks if task.get('priority', 0) == 2),
