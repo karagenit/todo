@@ -7,6 +7,7 @@ def test_validate_single_repeat():
     assert validate_single_repeat('1,15', 1, 31) == True
     assert validate_single_repeat('1-15', 1, 31) == True
     assert validate_single_repeat('*/5', 1, 31) == True
+    assert validate_single_repeat('1-10,20-28,31', 1, 31) == True
     assert validate_single_repeat('32', 1, 31) == False
     assert validate_single_repeat('0', 1, 31) == False
     assert validate_single_repeat('1-32', 1, 31) == False
@@ -19,6 +20,9 @@ def test_validate_repeat():
     assert validate_repeat('invalid') == False
     assert validate_repeat('* * * 1000 C') == False
     assert validate_repeat('* * * 0 X') == False
+    assert validate_repeat('* * 9 0 C') == False
+    assert validate_repeat('* 13 * 0 C') == False
+    assert validate_repeat('32 * * 0 C') == False
 
 def test_next_repeat_date():
     # Add tests once the function is implemented
