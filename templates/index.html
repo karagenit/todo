@@ -58,10 +58,15 @@
                     <input class="border rounded border-gray-400 px-1 h-7 text-sm flex-grow" type="date" name="due_date" value="{{ task.due_date }}">
                     <button type="button" onclick="this.parentElement.querySelector('input[name=due_date]').valueAsDate = new Date(new Date().toLocaleDateString())" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded ml-2 h-7 w-7">!</button>
                 </div>
-                <div class="flex flex-row items-center min-w-[220px] flex-1">
+                <div class="flex flex-row items-center min-w-[110px] flex-1">
+                    <button type="button" onclick="document.getElementById('repeat-row-{{ task.id }}').classList.toggle('hidden')" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded h-7 mr-2">Add Repeat</button>
+                </div>            
+            </div>
+            <div class="hidden flex flex-row flex-wrap mb-2 gap-x-6 gap-y-2" id="repeat-row-{{ task.id }}">
+                <div id="repeat-field" class="flex flex-row items-center flex-1">
                     <span class="mr-1.5 text-sm text-gray-700">Repeat</span>
                     <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 flex-grow" type="text" name="repeat" value="{{ task.repeat }}" placeholder="* * * * *">
-                </div>     
+                </div>
             </div>
             <textarea name="description" class="bg-gray-100 rounded p-1 text-sm text-gray-700">{{ task.description }}</textarea>
             <div class="form-row hidden mt-2" id="action-bar">
