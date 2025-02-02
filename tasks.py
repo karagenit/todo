@@ -1,5 +1,7 @@
 import os.path
 
+from repeat import validate_repeat
+
 from datetime import datetime
 
 from google.auth.transport.requests import Request
@@ -31,7 +33,8 @@ def get_tasks(creds):
                     item['start_date'] = datetime.strptime(date_str, '%Y-%m-%d').strftime('%Y-%m-%d')
                 elif field.startswith('#R:'):
                     repeat_str = field[3:].strip()
-                    # TODO validate
+                    if not validate_repeat(repeat_str):
+                        repeat_str = ''
                     item['repeat'] = repeat_str
             except ValueError:
                 pass            

@@ -104,7 +104,7 @@ def update_task():
         repeat = ''
 
     if task_id:
-        patch_task(creds, task_id, title, description, priority, start_date, due_date, completed, status, due, repeat) # TODO
+        patch_task(creds, task_id, title, description, priority, start_date, due_date, completed, status, due, repeat)
         for task in tasks:
             if task['id'] == task_id:
                 task['title'] = title
@@ -115,7 +115,7 @@ def update_task():
                 task['repeat'] = repeat
                 break
     else:
-        result = insert_task(creds, title, description, priority, start_date, due_date, completed, status, due, repeat) # TODO
+        result = insert_task(creds, title, description, priority, start_date, due_date, completed, status, due, repeat)
         if parent_id:
             move_task(creds, result['id'], parent_id, None)
         tasks.append({
