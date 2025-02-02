@@ -2,6 +2,7 @@ from auth import get_creds
 from tasks import get_tasks, patch_task, insert_task, move_task
 from flask import Flask, render_template, request, redirect
 from datetime import datetime, timedelta
+from repeat import validate_repeat
 
 creds = get_creds()
 tasks = get_tasks(creds)
@@ -79,6 +80,7 @@ def update_task():
     priority = request.form.get('priority', type=int)
     start_date = request.form.get('start_date', '')
     due_date = request.form.get('due_date', '')
+    repeat = request.form.get('repeat', '')
     parent_id = request.form.get('parent_id')
     action_tomorrow = request.form.get('action_tomorrow')
     action_complete = request.form.get('action_complete')
@@ -98,8 +100,11 @@ def update_task():
         status = 'completed'
         tasks[:] = [task for task in tasks if task['id'] != task_id]
 
+    if not validate_repeat(repeat):
+        repeat = ''
+
     if task_id:
-        patch_task(creds, task_id, title, description, priority, start_date, due_date, completed, status, due)
+        patch_task(creds, task_id, title, description, priority, start_date, due_date, completed, status, due, repeat) # TODO
         for task in tasks:
             if task['id'] == task_id:
                 task['title'] = title
@@ -107,9 +112,10 @@ def update_task():
                 task['priority'] = priority
                 task['start_date'] = start_date
                 task['due_date'] = due_date
+                task['repeat'] = repeat
                 break
     else:
-        result = insert_task(creds, title, description, priority, start_date, due_date, completed, status, due)
+        result = insert_task(creds, title, description, priority, start_date, due_date, completed, status, due, repeat) # TODO
         if parent_id:
             move_task(creds, result['id'], parent_id, None)
         tasks.append({
@@ -119,7 +125,8 @@ def update_task():
             'description': description,
             'priority': priority,
             'start_date': start_date,
-            'due_date': due_date
+            'due_date': due_date,
+            'repeat': repeat
         })
         # Needed below when moving the task
         task_id = result['id']

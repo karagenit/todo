@@ -8,6 +8,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+# TODO repeat
 def get_tasks(creds):
     service = build("tasks", "v1", credentials=creds)
     # Call the Tasks API
@@ -28,6 +29,10 @@ def get_tasks(creds):
                 elif field.startswith('#S:'):
                     date_str = field[3:].strip()
                     item['start_date'] = datetime.strptime(date_str, '%Y-%m-%d').strftime('%Y-%m-%d')
+                elif field.startswith('#R:'):
+                    repeat_str = field[3:].strip()
+                    # TODO validate
+                    item['repeat'] = repeat_str
             except ValueError:
                 pass            
         item['description'] = '\n'.join([line.strip() for line in notes.splitlines() if not line.strip().startswith('#')])
@@ -35,7 +40,7 @@ def get_tasks(creds):
     return items
 # TODO eventually iterate over the cursor token to get more than 100 results
 
-def patch_task(creds, task_id, title, description, priority, start_date, due_date, completed, status, due):
+def patch_task(creds, task_id, title, description, priority, start_date, due_date, completed, status, due, repeat):
     service = build("tasks", "v1", credentials=creds)
         
     notes = description + "\n"
@@ -45,13 +50,15 @@ def patch_task(creds, task_id, title, description, priority, start_date, due_dat
         notes += f"#S:{start_date}\n"
     if due_date:
         notes += f"#D:{due_date}\n"
+    if repeat:
+        notes += f"#R:{repeat}\n"
     
     task = {
         'title': title,
         'notes': notes.strip(),
         'completed': completed,
         'status': status,
-        'due': due
+        'due': due # TODO only overwrite if intentional? ie if we arent changing the due date in our app we should keep the existing one... maybe differentiate None vs ''
     }    
     
     result = service.tasks().patch(
@@ -62,7 +69,7 @@ def patch_task(creds, task_id, title, description, priority, start_date, due_dat
     
     return result
 
-def insert_task(creds, title, description, priority, start_date, due_date, completed, status, due):
+def insert_task(creds, title, description, priority, start_date, due_date, completed, status, due, repeat):
     service = build("tasks", "v1", credentials=creds)
             
     notes = description + "\n"
@@ -72,6 +79,8 @@ def insert_task(creds, title, description, priority, start_date, due_date, compl
         notes += f"#S:{start_date}\n"
     if due_date:
         notes += f"#D:{due_date}\n"
+    if repeat:
+        notes += f"#R:{repeat}\n"
     
     task = {
         'title': title,

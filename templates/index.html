@@ -65,7 +65,8 @@
             <div class="hidden flex flex-row flex-wrap mb-2 gap-x-6 gap-y-2" id="repeat-row-{{ task.id }}">
                 <div id="repeat-field" class="flex flex-row items-center flex-1">
                     <span class="mr-1.5 text-sm text-gray-700">Repeat</span>
-                    <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 flex-grow" type="text" name="repeat" value="{{ task.repeat }}" placeholder="* * * * *">
+                    <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 flex-grow" type="text" name="repeat" value="{{ task.repeat }}"
+                        placeholder="DoM[1-31] MoY[1-12] DoW[0-6] DaysInterval[0-999] FromStartOrComplete[SC]">
                 </div>
             </div>
             <textarea name="description" class="bg-gray-100 rounded p-1 text-sm text-gray-700">{{ task.description }}</textarea>
