@@ -60,3 +60,17 @@ Getting access to the api was a pain. Went to google cloud console and opened pr
 Went to enabled APIs then Credentials then Web Task Client. Redirect URLs tried `http://localhost` with and without trailing slash, with and without http**s**. Finally worked with these. Not sure which of the four is necessary. Based on the URL's redirect_uri param it looks like it's `http://localhost:59158/` but you must remove the port number (since port seems random each time). But probalby need to include trailing slash.
 
 Match syntax is only supported in python 3.10 and newer. Brew upgrade python3 didn't work. I have 3.8 in /usr/bin and now 3.13 in /usr/local/bin after brew upgrade. Fricking annoying.
+
+## uh
+
+Jan 31
+
+all the sudden the script fails with 'google' couldnot be found. the module is installed with pip. no idea why it can't be found. pip3 can't install stuff due to it being a 'managed environment'. gotta create a virtual environment???
+
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+
+    caleb@Calebs-MacBook-Pro todo % python3 -m venv /Users/caleb/python/venv  
+caleb@Calebs-MacBook-Pro todo % source /Users/caleb/python/venv/bin/activate
+(venv) caleb@Calebs-MacBook-Pro todo % python3 -m pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
