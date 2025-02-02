@@ -74,3 +74,18 @@ all the sudden the script fails with 'google' couldnot be found. the module is i
     caleb@Calebs-MacBook-Pro todo % python3 -m venv /Users/caleb/python/venv  
 caleb@Calebs-MacBook-Pro todo % source /Users/caleb/python/venv/bin/activate
 (venv) caleb@Calebs-MacBook-Pro todo % python3 -m pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+
+## Repeating
+
+- `*` any value
+- `,` list of values
+- `-` range of values
+- `/` step values
+
+1. Day of Month [1-31]
+2. Month of Year [1-12]
+3. Day of Week [0-6] sun-sat
+4. Days Since [0-999] 
+5. Last Start [S] or Completion [C]
+
+Separate repeat fields for start and due? Most cases will just be start - ie start this after a certain interval but then just treat it as a p2/p3 whatever. But some cases things might have a specific due date that repeats as well.

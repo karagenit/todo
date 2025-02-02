@@ -59,7 +59,7 @@
                     <button type="button" onclick="this.parentElement.querySelector('input[name=due_date]').valueAsDate = new Date(new Date().toLocaleDateString())" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded ml-2 h-7 w-7">!</button>
                 </div>
                 <div class="flex flex-row items-center min-w-[110px] flex-1">
-                    <button type="button" onclick="document.getElementById('repeat-row-{{ task.id }}').classList.toggle('hidden')" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded h-7 mr-2">Add Repeat</button>
+                    <button type="button" onclick="document.getElementById('repeat-row-{{ task.id }}').classList.toggle('hidden')" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded h-7 text-sm">Add Repeat</button>
                 </div>            
             </div>
             <div class="hidden flex flex-row flex-wrap mb-2 gap-x-6 gap-y-2" id="repeat-row-{{ task.id }}">
