@@ -2,7 +2,7 @@ from auth import get_creds
 from tasks import get_tasks, patch_task, insert_task, move_task
 from flask import Flask, render_template, request, redirect
 from datetime import datetime, timedelta
-from repeat import validate_repeat
+from repeat import validate_repeat, next_repeat_date
 
 creds = get_creds()
 tasks = get_tasks(creds)
@@ -77,7 +77,7 @@ def update_task():
     task_id = request.form.get('task_id')
     title = request.form.get('title')
     description = request.form.get('description', '')
-    priority = request.form.get('priority', type=int)
+    priority = request.form.get('priority', type=int, default=0) # TODO this zero is necessary??
     start_date = request.form.get('start_date', '')
     due_date = request.form.get('due_date', '')
     repeat = request.form.get('repeat', '')
@@ -114,6 +114,20 @@ def update_task():
                 task['due_date'] = due_date
                 task['repeat'] = repeat
                 break
+        if status == 'completed' and validate_repeat(repeat):
+            next_start = next_repeat_date(start_date, datetime.now().date(), repeat).strftime('%Y-%m-%d')
+            result = insert_task(creds, title, description, priority, next_start, due_date, None, 'needsAction', None, repeat)
+            tasks.append({
+                'id': result['id'],
+                'parent': None,
+                'title': title,
+                'description': description,
+                'priority': priority,
+                'start_date': next_start,
+                'due_date': due_date,
+                'repeat': repeat
+            })
+            task_id = result['id']
     else:
         result = insert_task(creds, title, description, priority, start_date, due_date, completed, status, due, repeat)
         if parent_id:
