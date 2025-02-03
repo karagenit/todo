@@ -88,7 +88,8 @@ def update_task():
     status = 'needsAction'
     due = None
 
-    if start_date and datetime.strptime(start_date, '%Y-%m-%d').date() <= datetime.now().date():
+    # TODO this causes a problem with repeating. it clears the past start date before we can use it to calculate the next one...
+    if start_date and datetime.strptime(start_date, '%Y-%m-%d').date() <= datetime.now().date() and action_complete != "true":
         start_date = ''
 
     if action_tomorrow == "true":
@@ -115,7 +116,8 @@ def update_task():
                 task['repeat'] = repeat
                 break
         if status == 'completed' and validate_repeat(repeat):
-            next_start = next_repeat_date(start_date, datetime.now().date(), repeat).strftime('%Y-%m-%d')
+            repeat_start_date = datetime.strptime(start_date, '%Y-%m-%d').date() if start_date else datetime.now().date()
+            next_start = next_repeat_date(repeat_start_date, datetime.now().date(), repeat).strftime('%Y-%m-%d')
             result = insert_task(creds, title, description, priority, next_start, due_date, None, 'needsAction', None, repeat)
             tasks.append({
                 'id': result['id'],
