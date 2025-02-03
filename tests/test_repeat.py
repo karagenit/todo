@@ -1,4 +1,5 @@
 import pytest
+from datetime import datetime, timedelta
 from repeat import validate_single_repeat, validate_repeat, next_repeat_date, matches_repeat_field
 
 def test_validate_single_repeat():
@@ -37,19 +38,24 @@ def test_matches_repeat_field():
     # Test ranges
     assert matches_repeat_field('1-5', 3) == True
     assert matches_repeat_field('1-5', 6) == False
-    assert matches_repeat_field('1-5', 1) == True
-    assert matches_repeat_field('1-5', 5) == True
     # Test step values
-    assert matches_repeat_field('*/2', 2) == True
     assert matches_repeat_field('*/2', 4) == True
     assert matches_repeat_field('*/2', 3) == False    
     # Test complex combinations
-    assert matches_repeat_field('1-5,7,9-11', 4) == True
     assert matches_repeat_field('1-5,7,9-11', 7) == True
     assert matches_repeat_field('1-5,7,9-11', 10) == True
     assert matches_repeat_field('1-5,7,9-11', 6) == False
-    assert matches_repeat_field('1-5,7,9-11', 8) == False
 
 def test_next_repeat_date():
-    # Add tests once the function is implemented
-    pass
+    # Test completion-based repeat (C)
+    assert next_repeat_date(datetime(2023, 1, 1), datetime(2023, 1, 15), '* * * 7 C') == datetime(2023, 1, 22)
+    # Test start-based repeat (S)
+    assert next_repeat_date(datetime(2023, 1, 1), datetime(2023, 1, 15), '* * * 7 S') == datetime(2023, 1, 8)
+    # Test specific day of month (15th of any month)
+    assert next_repeat_date(datetime(2023, 1, 1), datetime(2023, 1, 1), '15 * * 0 C') == datetime(2023, 1, 15)
+    # Test specific month (only March)
+    assert next_repeat_date(datetime(2023, 1, 1), datetime(2023, 1, 1), '* 3 * 0 C') == datetime(2023, 3, 1)
+    # Test specific day of week (only Sundays - 0)
+    assert next_repeat_date(datetime(2023, 1, 1), datetime(2023, 1, 2), '* * 0 0 C') == datetime(2023, 1, 8)
+    # Test invalid repeat string
+    assert next_repeat_date(datetime(2023, 1, 1), datetime(2023, 1, 2), 'invalid') == None

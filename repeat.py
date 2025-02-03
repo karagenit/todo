@@ -1,6 +1,6 @@
 # Logic for validating and using repeating fields on tasks
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def validate_single_repeat(day, min, max):
     if day != '*':
@@ -82,8 +82,8 @@ def next_repeat_date(last_date, completion_date, repeat_str):
         # Python gives us monday=0 but crontab standard has sunday=0
         day_of_week = (next_date.weekday() + 1) % 7
 
-        if (matches_repeat_field(parts[0], month_of_year) and
-            matches_repeat_field(parts[1], day_of_month) and
+        if (matches_repeat_field(parts[0], day_of_month) and
+            matches_repeat_field(parts[1], month_of_year) and
             matches_repeat_field(parts[2], day_of_week)):
             return next_date
 
