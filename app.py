@@ -3,46 +3,12 @@ from tasks import get_tasks, patch_task, insert_task, move_task
 from flask import Flask, render_template, request, redirect
 from datetime import datetime, timedelta
 from repeat import validate_repeat, next_repeat_date
+from sort import task_sort_key, get_sorted_tasks
 
 creds = get_creds()
 tasks = get_tasks(creds)
 
 app = Flask(__name__)
-
-def should_display_task(task):
-    today = datetime.now().date()
-    no_start_date = not task.get('start_date')
-    starts_today_or_earlier = task.get('start_date') and datetime.strptime(task['start_date'], '%Y-%m-%d').date() <= today
-    no_parent = not task.get('parent')
-    return (no_start_date or starts_today_or_earlier) and no_parent
-
-def task_sort_key(task):
-    start_date_str = task.get('start_date')
-    if not start_date_str:
-        start_date = datetime.now()
-    else:
-        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-    
-    if start_date.date() < datetime.now().date():
-        start_date = datetime.now()
-    
-    sort_key = task.get('assigned_date') or task.get('due_date')
-    if not sort_key:
-        priority = task.get('priority', 0)
-        if priority == 3:
-            sort_key = (start_date + timedelta(days=7)).strftime('%Y-%m-%d')
-        elif priority == 2:
-            sort_key = (start_date + timedelta(days=14)).strftime('%Y-%m-%d')
-        elif priority == 1:
-            sort_key = (start_date + timedelta(days=30)).strftime('%Y-%m-%d')
-        elif priority == 0:
-            sort_key = (start_date + timedelta(days=-7)).strftime('%Y-%m-%d')
-
-    # Add priority to the sort order as a tiebreaker for equal dates. Uses 3-priority so higher priority is first since this is sorted least to greatest. 
-    return sort_key + '-' + str(3 - task.get('priority', 0))
-
-def get_sorted_tasks():
-    return sorted([task for task in tasks if should_display_task(task)], key=task_sort_key)
 
 @app.route('/')
 def index():
@@ -60,7 +26,7 @@ def index():
         'month': sum(1 for task in tasks if task.get('due_date') and today + timedelta(days=7) < datetime.strptime(task['due_date'], '%Y-%m-%d').date() <= today + timedelta(days=30))
     }
 
-    sorted_tasks = get_sorted_tasks()
+    sorted_tasks = get_sorted_tasks(tasks)
     for task in sorted_tasks:
         task['children'] = [{}]
         for potential_child in tasks:
@@ -68,7 +34,7 @@ def index():
                 task['children'].append(potential_child)
     
     display_tasks = [{}] + sorted_tasks[:5]
-    
+
     return render_template('index.html', tasks=display_tasks, stats=summary_stats)
 
 @app.route('/update', methods=['POST'])
