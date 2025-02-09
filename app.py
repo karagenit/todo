@@ -86,10 +86,11 @@ def update_task():
     action_complete = request.form.get('action_complete')
     completed = None
     status = 'needsAction'
-    due = request.form.get('assigned_date', '')
+    due = None
+    assigned_date = request.form.get('assigned_date', '')
 
-    if due:
-        due = datetime.strptime(due, '%Y-%m-%d').strftime('%Y-%m-%dT%H:%M:%SZ')
+    if assigned_date:
+        due = datetime.strptime(assigned_date, '%Y-%m-%d').strftime('%Y-%m-%dT%H:%M:%SZ')
 
     # TODO this causes a problem with repeating. it clears the past start date before we can use it to calculate the next one...
     if start_date and datetime.strptime(start_date, '%Y-%m-%d').date() <= datetime.now().date() and action_complete != "true":
@@ -117,6 +118,7 @@ def update_task():
                 task['start_date'] = start_date
                 task['due_date'] = due_date
                 task['repeat'] = repeat
+                task['assigned_date'] = assigned_date
                 break
         if status == 'completed' and validate_repeat(repeat):
             repeat_start_date = datetime.strptime(start_date, '%Y-%m-%d').date() if start_date else datetime.now().date()
@@ -145,7 +147,8 @@ def update_task():
             'priority': priority,
             'start_date': start_date,
             'due_date': due_date,
-            'repeat': repeat
+            'repeat': repeat,
+            'assigned_date': assigned_date
         })
         # Needed below when moving the task
         task_id = result['id']
