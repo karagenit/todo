@@ -86,7 +86,10 @@ def update_task():
     action_complete = request.form.get('action_complete')
     completed = None
     status = 'needsAction'
-    due = None
+    due = request.form.get('assigned_date', '')
+
+    if due:
+        due = datetime.strptime(due, '%Y-%m-%d').strftime('%Y-%m-%dT%H:%M:%SZ')
 
     # TODO this causes a problem with repeating. it clears the past start date before we can use it to calculate the next one...
     if start_date and datetime.strptime(start_date, '%Y-%m-%d').date() <= datetime.now().date() and action_complete != "true":
