@@ -26,8 +26,8 @@ def task_sort_key(task):
     if start_date.date() < datetime.now().date():
         start_date = datetime.now()
     
-    sort_key = ''
-    if not task.get('due_date'):
+    sort_key = task.get('assigned_date', task.get('due_date', None))
+    if not sort_key:
         priority = task.get('priority', 0)
         if priority == 3:
             sort_key = (start_date + timedelta(days=7)).strftime('%Y-%m-%d')
@@ -37,8 +37,7 @@ def task_sort_key(task):
             sort_key = (start_date + timedelta(days=30)).strftime('%Y-%m-%d')
         elif priority == 0:
             sort_key = (start_date + timedelta(days=-7)).strftime('%Y-%m-%d')
-    else:
-        sort_key = task.get('due_date')
+
     # Add priority to the sort order as a tiebreaker for equal dates. Uses 3-priority so higher priority is first since this is sorted least to greatest. 
     return sort_key + '-' + str(3 - task.get('priority', 0))
 
