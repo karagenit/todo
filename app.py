@@ -101,7 +101,7 @@ def update_task():
 
     if action_complete == "true":
         completed = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
-        due = completed
+        due = due or completed
         status = 'completed'
         tasks[:] = [task for task in tasks if task['id'] != task_id]
 
