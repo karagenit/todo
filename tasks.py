@@ -39,7 +39,10 @@ def get_tasks(creds):
             except ValueError:
                 pass            
         item['description'] = '\n'.join([line.strip() for line in notes.splitlines() if not line.strip().startswith('#')])
-    
+        # What google calendar calls "due" we call the "assigned" date (the date it shows up on the calendar on)
+        due_str = item.get('due', '')
+        item['assigned_date'] = datetime.strptime(due_str, '%Y-%m-%dT%H:%M:%S.%fZ').strftime('%Y-%m-%d') if due_str else ''    
+
     return items
 # TODO eventually iterate over the cursor token to get more than 100 results
 
