@@ -55,6 +55,27 @@ def test_task_sort_key_priority_tiebreaker():
     key2 = task_sort_key(tasks[1])
     assert key1 < key2
 
+def test_task_sort_key_priority_fallback():
+    tasks = [
+        {'title': 'Task 1', 'priority': 3},
+        {'title': 'Task 2', 'priority': 2},
+        {'title': 'Task 3', 'priority': 1}
+    ]
+    
+    today = datetime.now()
+    expected_dates = [
+        (today + timedelta(days=7)).strftime('%Y-%m-%d'),
+        (today + timedelta(days=14)).strftime('%Y-%m-%d'),
+        (today + timedelta(days=30)).strftime('%Y-%m-%d')
+    ]
+    
+    keys = [task_sort_key(task) for task in tasks]
+    
+    # Check that each key starts with the expected implied date based on priority
+    for i, key in enumerate(keys):
+        assert key.startswith(expected_dates[i])
+    
+
 def test_get_sorted_tasks():
     tasks = [
         {'title': 'High Priority', 'priority': 3},
