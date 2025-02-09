@@ -26,7 +26,7 @@ def task_sort_key(task):
     if start_date.date() < datetime.now().date():
         start_date = datetime.now()
     
-    sort_key = task.get('assigned_date', task.get('due_date', None))
+    sort_key = task.get('assigned_date') or task.get('due_date')
     if not sort_key:
         priority = task.get('priority', 0)
         if priority == 3:
@@ -68,7 +68,7 @@ def index():
                 task['children'].append(potential_child)
     
     display_tasks = [{}] + sorted_tasks[:5]
-
+    
     return render_template('index.html', tasks=display_tasks, stats=summary_stats)
 
 @app.route('/update', methods=['POST'])
