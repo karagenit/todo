@@ -50,17 +50,17 @@
             <div class="flex flex-row flex-wrap mb-2 gap-x-6 gap-y-2">
                 <div class="flex flex-row items-center min-w-[200px] flex-1">
                     <span class="mr-1.5 text-sm text-gray-700">Start</span>
-                    <input class="border rounded border-gray-400 px-1 mr-2 h-7 text-sm flex-grow" type="date" name="start_date" value="{{ task.start_date }}">
+                    <input class="border rounded border-gray-400 px-1 mr-2 h-7 text-sm flex-grow" type="date" name="start_date" value="{{ task.start_date_str() }}">
                     <button type="submit" name="action_tomorrow" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded h-7">→</button>
                 </div>
                 <div class="flex flex-row items-center min-w-[200px] flex-1">
                     <span class="mr-1.5 text-sm text-gray-700">Due</span>
-                    <input class="border rounded border-gray-400 px-1 h-7 text-sm flex-grow" type="date" name="due_date" value="{{ task.due_date }}">
+                    <input class="border rounded border-gray-400 px-1 h-7 text-sm flex-grow" type="date" name="due_date" value="{{ task.due_date_str() }}">
                     <button type="button" onclick="this.parentElement.querySelector('input[name=due_date]').valueAsDate = new Date(new Date().toLocaleDateString())" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded ml-2 h-7 w-7">!</button>
                 </div>
                 <div class="flex flex-row items-center min-w-[200px] flex-1">
                     <span class="mr-1.5 text-sm text-gray-700">Assigned</span>
-                    <input class="border rounded border-gray-400 px-1 h-7 text-sm flex-grow" type="date" name="assigned_date" value="{{ task.assigned_date }}">
+                    <input class="border rounded border-gray-400 px-1 h-7 text-sm flex-grow" type="date" name="assigned_date" value="{{ task.assigned_date_str() }}">
                 </div>
                 <div class="flex flex-row items-center min-w-[74px] flex-1">
                     <button type="button" onclick="document.getElementById('repeat-row-{{ task.id }}').classList.toggle('hidden')" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded h-7 text-sm">+ Repeat</button>

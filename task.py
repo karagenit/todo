@@ -16,6 +16,7 @@ class Task:
         self.status = 'needsAction'
         self.id = ''
         self.parent_id = ''
+        self.children = []
 
     # Getters used in the html template
     def start_date_str(self):

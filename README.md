@@ -54,6 +54,7 @@ Version 01, Starts 01/09/23, Due 01/10/23, Medium Priority, Medium Difficulty, T
 - allow searching for tasks; deduplicate tasks
 - clear date button
 - zero P tasks should appear before tasks with a due date in the past...
+- use assigned date in place of start date too (hide tasks assigned in the future)
 
 ## Devlog
 
