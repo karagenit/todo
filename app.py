@@ -16,25 +16,23 @@ def index():
     today = datetime.now().date()
 
     # TODO need to use the implied due dates from the sorting algo here?
-    # TODO FIXME
     summary_stats = {
-    #     'p3': sum(1 for task in tasks if task.get('priority', 0) == 3),
-    #     'p2': sum(1 for task in tasks if task.get('priority', 0) == 2),
-    #     'p1': sum(1 for task in tasks if task.get('priority', 0) == 1),
-    #     'p0': sum(1 for task in tasks if task.get('priority', 0) == 0),
-    #     'overdue': sum(1 for task in tasks if task.get('due_date') and datetime.strptime(task['due_date'], '%Y-%m-%d').date() < today),
-    #     'today': sum(1 for task in tasks if task.get('due_date') and today <= datetime.strptime(task['due_date'], '%Y-%m-%d').date() < today + timedelta(days=1)),
-    #     'week':  sum(1 for task in tasks if task.get('due_date') and today + timedelta(days=1) <= datetime.strptime(task['due_date'], '%Y-%m-%d').date() <= today + timedelta(days=7)),
-    #     'month': sum(1 for task in tasks if task.get('due_date') and today + timedelta(days=7) < datetime.strptime(task['due_date'], '%Y-%m-%d').date() <= today + timedelta(days=30))
+        'p3': sum(1 for task in tasks if task.priority == 3),
+        'p2': sum(1 for task in tasks if task.priority == 2),
+        'p1': sum(1 for task in tasks if task.priority == 1),
+        'p0': sum(1 for task in tasks if task.priority == 0),
+        'overdue': sum(1 for task in tasks if task.due_date and task.due_date < today),
+        'today': sum(1 for task in tasks if task.due_date and today <= task.due_date < today + timedelta(days=1)),
+        'week':  sum(1 for task in tasks if task.due_date and today + timedelta(days=1) <= task.due_date <= today + timedelta(days=7)),
+        'month': sum(1 for task in tasks if task.due_date and today + timedelta(days=7) < task.due_date <= today + timedelta(days=30))
     }
-
     sorted_tasks = get_sorted_tasks(tasks)
-    # TODO FIXME
-    # for task in sorted_tasks:
-    #     task['children'] = [{}]
-    #     for potential_child in tasks:
-    #         if potential_child.get('parent') == task['id']:
-    #             task['children'].append(potential_child)
+
+    for task in sorted_tasks:
+        task.children = [{}]
+        for potential_child in tasks:
+            if potential_child.parent_id == task.id:
+                task.children.append(potential_child)
     
     display_tasks = [Task()] + sorted_tasks[:5]
 
