@@ -32,5 +32,6 @@ def task_sort_key(task):
     # Add priority to the sort order as a tiebreaker for equal dates
     return sort_key + '-' + str(3 - task.priority)
 
+# TODO Rename to get sorted parent tasks
 def get_sorted_tasks(tasks):
     return sorted([task for task in tasks if should_display_task(task)], key=task_sort_key)

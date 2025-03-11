@@ -40,93 +40,48 @@ def index():
 
 @app.route('/update', methods=['POST'])
 def update_task():
-    task_id = request.form.get('task_id')
-    title = request.form.get('title')
-    description = request.form.get('description', '')
-    priority = request.form.get('priority', type=int, default=0) # TODO this zero is necessary??
-    start_date = request.form.get('start_date', '')
-    due_date = request.form.get('due_date', '')
-    repeat = request.form.get('repeat', '')
-    parent_id = request.form.get('parent_id')
-    action_tomorrow = request.form.get('action_tomorrow')
-    action_complete = request.form.get('action_complete')
-    completed = None
-    status = 'needsAction'
-    due = None
-    assigned_date = request.form.get('assigned_date', '')
+    task = Task.from_form_submission(request.form)
 
-    if assigned_date:
-        due = datetime.strptime(assigned_date, '%Y-%m-%d').strftime('%Y-%m-%dT%H:%M:%SZ')
-
-    # TODO this causes a problem with repeating. it clears the past start date before we can use it to calculate the next one...
-    if start_date and datetime.strptime(start_date, '%Y-%m-%d').date() <= datetime.now().date() and action_complete != "true":
-        start_date = ''
-
-    if action_tomorrow == "true":
-        start_date = (datetime.now().date() + timedelta(days=1)).strftime('%Y-%m-%d')
-
-    if action_complete == "true":
-        completed = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
-        due = due or completed
-        status = 'completed'
-        tasks[:] = [task for task in tasks if task['id'] != task_id]
-
-    if not validate_repeat(repeat):
-        repeat = ''
-
-    if task_id:
-        patch_task(creds, task_id, title, description, priority, start_date, due_date, completed, status, due, repeat)
-        for task in tasks:
-            if task['id'] == task_id:
-                task['title'] = title
-                task['description'] = description
-                task['priority'] = priority
-                task['start_date'] = start_date
-                task['due_date'] = due_date
-                task['repeat'] = repeat
-                task['assigned_date'] = assigned_date
+    if task.id:
+        patch_task(creds, task)
+        # Replace the old task in this array with the new task
+        for i, t in enumerate(tasks):
+            if t.id == task.id:
+                tasks[i] = task
                 break
-        if status == 'completed' and validate_repeat(repeat):
-            repeat_start_date = datetime.strptime(start_date, '%Y-%m-%d').date() if start_date else datetime.now().date()
-            next_start = next_repeat_date(repeat_start_date, datetime.now().date(), repeat).strftime('%Y-%m-%d')
-            result = insert_task(creds, title, description, priority, next_start, due_date, None, 'needsAction', None, repeat)
-            tasks.append({
-                'id': result['id'],
-                'parent': None,
-                'title': title,
-                'description': description,
-                'priority': priority,
-                'start_date': next_start,
-                'due_date': due_date,
-                'repeat': repeat
-            })
-            task_id = result['id']
+        # FIXME for repeating
+        # if status == 'completed' and validate_repeat(repeat):
+        #     repeat_start_date = datetime.strptime(start_date, '%Y-%m-%d').date() if start_date else datetime.now().date()
+        #     next_start = next_repeat_date(repeat_start_date, datetime.now().date(), repeat).strftime('%Y-%m-%d')
+        #     result = insert_task(creds, title, description, priority, next_start, due_date, None, 'needsAction', None, repeat)
+        #     tasks.append({
+        #         'id': result['id'],
+        #         'parent': None,
+        #         'title': title,
+        #         'description': description,
+        #         'priority': priority,
+        #         'start_date': next_start,
+        #         'due_date': due_date,
+        #         'repeat': repeat
+        #     })
+        #     task_id = result['id']
     else:
-        result = insert_task(creds, title, description, priority, start_date, due_date, completed, status, due, repeat)
-        if parent_id:
-            move_task(creds, result['id'], parent_id, None)
-        tasks.append({
-            'id': result['id'],
-            'parent': parent_id,
-            'title': title,
-            'description': description,
-            'priority': priority,
-            'start_date': start_date,
-            'due_date': due_date,
-            'repeat': repeat,
-            'assigned_date': assigned_date
-        })
+        result = insert_task(creds, task)
+        task.id = result['id']
+        if task.parent_id:
+            move_task(creds, task.id, task.parent_id, None)
+        tasks.append(task)
         # Needed below when moving the task
         task_id = result['id']
     
     # For non-child tasks, we want to set the order of the task
-    if not parent_id:
-        sorted_tasks = sorted([task for task in tasks if not task.get('parent')], key=task_sort_key)
+    # if not parent_id:
+    #     sorted_tasks = sorted([task for task in tasks if not task.get('parent')], key=task_sort_key)
 
-        task_index = next((i for i, task in enumerate(sorted_tasks) if task['id'] == task_id), -1)
-        if task_index > 0:
-            previous_task = sorted_tasks[task_index - 1]
-            move_task(creds, task_id, None, previous_task['id'])
+    #     task_index = next((i for i, task in enumerate(sorted_tasks) if task['id'] == task_id), -1)
+    #     if task_index > 0:
+    #         previous_task = sorted_tasks[task_index - 1]
+    #         move_task(creds, task_id, None, previous_task['id'])
     
     return redirect('/')
 
