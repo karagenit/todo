@@ -1,13 +1,13 @@
-from auth import get_creds
-from tasks import get_tasks, patch_task, insert_task, move_task
 from flask import Flask, render_template, request, redirect
 from datetime import datetime, timedelta
 from repeat import validate_repeat, next_repeat_date
 from sort import task_sort_key, get_sorted_tasks
 from task import Task
+import api
+import tasklist
 
-creds = get_creds()
-tasks = get_tasks(creds)
+creds = api.get_creds()
+tasks = tasklist.from_api(creds)
 
 app = Flask(__name__)
 
@@ -43,7 +43,7 @@ def update_task():
     task = Task.from_form_submission(request.form)
 
     if task.id:
-        patch_task(creds, task)
+        api.patch_task(creds, task)
         # Remove old task from the array, and only replace it if not completed
         tasks[:] = [t for t in tasks if t.id != task.id]
         if not task.completed:
@@ -65,10 +65,10 @@ def update_task():
         #     })
         #     task_id = result['id']
     else:
-        result = insert_task(creds, task)
+        result = api.insert_task(creds, task)
         task.id = result['id']
         if task.parent_id:
-            move_task(creds, task.id, task.parent_id, None)
+            api.move_task(creds, task.id, task.parent_id, None)
         tasks.append(task)
         # Needed below when moving the task
         task_id = result['id']
@@ -87,7 +87,7 @@ def update_task():
 @app.route('/reload')
 def reload_tasks():
     global tasks
-    tasks = get_tasks(creds)
+    tasks = tasklist.from_api(creds)
     return redirect('/')
 
 app.run(debug=True, port=5001)
