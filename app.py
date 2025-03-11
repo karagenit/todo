@@ -44,11 +44,10 @@ def update_task():
 
     if task.id:
         patch_task(creds, task)
-        # Replace the old task in this array with the new task
-        for i, t in enumerate(tasks):
-            if t.id == task.id:
-                tasks[i] = task
-                break
+        # Remove old task from the array, and only replace it if not completed
+        tasks[:] = [t for t in tasks if t.id != task.id]
+        if not task.completed:
+            tasks.append(task)
         # FIXME for repeating
         # if status == 'completed' and validate_repeat(repeat):
         #     repeat_start_date = datetime.strptime(start_date, '%Y-%m-%d').date() if start_date else datetime.now().date()
