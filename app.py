@@ -5,6 +5,7 @@ from sort import task_sort_key, get_sorted_tasks
 from task import Task
 import api
 import tasklist
+import summary
 
 creds = api.get_creds()
 tasks = tasklist.from_api(creds)
@@ -13,19 +14,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    today = datetime.now().date()
-
-    # TODO need to use the implied due dates from the sorting algo here?
-    summary_stats = {
-        'p3': sum(1 for task in tasks if task.priority == 3),
-        'p2': sum(1 for task in tasks if task.priority == 2),
-        'p1': sum(1 for task in tasks if task.priority == 1),
-        'p0': sum(1 for task in tasks if task.priority == 0),
-        'overdue': sum(1 for task in tasks if task.due_date and task.due_date < today),
-        'today': sum(1 for task in tasks if task.due_date and today <= task.due_date < today + timedelta(days=1)),
-        'week':  sum(1 for task in tasks if task.due_date and today + timedelta(days=1) <= task.due_date <= today + timedelta(days=7)),
-        'month': sum(1 for task in tasks if task.due_date and today + timedelta(days=7) < task.due_date <= today + timedelta(days=30))
-    }
+    summary_stats = summary.get_stats(tasks)
     sorted_tasks = get_sorted_tasks(tasks)
 
     for task in sorted_tasks:
