@@ -108,3 +108,28 @@ def test_from_form_submission_invalid_repeat():
     ])
     task = Task.from_form_submission(form_data)
     assert task.repeat == ''
+
+def test_to_api_format():
+    task = Task(
+        title='Test Task',
+        description='Task description',
+        priority=2,
+        due_date=date(2024, 1, 15),
+        start_date=date(2024, 1, 10),
+        assigned_date=date(2024, 1, 20),
+        repeat='* * * 3 C'
+    )
+    
+    api_format = task.to_api_format()
+        
+    assert api_format['title'] == 'Test Task'
+    assert api_format['notes'] == (
+        'Task description\n'
+        '#P:2\n'
+        '#S:2024-01-10\n'
+        '#D:2024-01-15\n'
+        '#R:* * * 3 C'
+    )
+    assert api_format['completed'] == ''
+    assert api_format['status'] == 'needsAction'
+    assert api_format['due'] == '2024-01-20T00:00:00Z'
