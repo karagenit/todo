@@ -1,6 +1,7 @@
 from task import Task
 import api
 from typing import Dict, List
+from repeat import validate_repeat, next_repeat_task
 
 # TODO maybe this could be a TaskList class, where it stores the creds inside it? That way we don't have to have the global creds we always pass in...
 
@@ -24,21 +25,8 @@ def update_task(creds, tasks, task):
     tasks[:] = [t for t in tasks if t.id != task.id]
     if not task.completed:
         tasks.append(task)
-    # FIXME for repeating
-    # if status == 'completed' and validate_repeat(repeat):
-    #     repeat_start_date = datetime.strptime(start_date, '%Y-%m-%d').date() if start_date else datetime.now().date()
-    #     next_start = next_repeat_date(repeat_start_date, datetime.now().date(), repeat).strftime('%Y-%m-%d')
-    #     result = insert_task(creds, title, description, priority, next_start, due_date, None, 'needsAction', None, repeat)
-    #     tasks.append({
-    #         'id': result['id'],
-    #         'parent': None,
-    #         'title': title,
-    #         'description': description,
-    #         'priority': priority,
-    #         'start_date': next_start,
-    #         'due_date': due_date,
-    #         'repeat': repeat
-    #     })
+    if task.completed and validate_repeat(task.repeat):
+        insert_task(creds, tasks, next_repeat_task(task))
 
 def insert_task(creds, tasks, task):
     result = api.insert_task(creds, task)

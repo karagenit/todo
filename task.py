@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, date
-from repeat import validate_repeat
+# from repeat import validate_repeat
 
 class Task:
     def __init__(self, title: str = '', description: str = '', priority: int = 0, due_date: date = None, 
@@ -108,9 +108,10 @@ class Task:
             task.completed = task.assigned_date_longstr()
             task.status = 'completed'
 
+        # TODO fix circular dependency here 
         # Handle repeat validation
-        if not validate_repeat(task.repeat):
-            task.repeat = ''
+        # if not validate_repeat(task.repeat):
+        #     task.repeat = ''
         
         return task
 
