@@ -1,21 +1,22 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from repeat import validate_repeat
 
 class Task:
-    def __init__(self):
-        self.title = ''
-        self.description = ''
-        self.priority = 0
-        self.due_date = '' # Date obj
-        self.start_date = '' # Date obj
-        self.assigned_date = '' # Date obj
-        self.repeat = ''
+    def __init__(self, title: str = '', description: str = '', priority: int = 0, due_date: date = None, 
+                 start_date: date = None, assigned_date: date = None, repeat: str = '', parent_id: str = ''):
+        self.title = title
+        self.description = description
+        self.priority = priority
+        self.due_date = due_date
+        self.start_date = start_date
+        self.assigned_date = assigned_date
+        self.repeat = repeat
         self.notes = ''
         # TODO get rid of this field? It's API only so we could just generate it in to_api_format
         self.completed = '' # String, full-length date of when completed
         self.status = 'needsAction'
         self.id = ''
-        self.parent_id = ''
+        self.parent_id = parent_id
         self.children = []
 
     # Getters used in the html template
