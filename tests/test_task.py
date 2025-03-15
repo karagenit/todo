@@ -63,4 +63,16 @@ def test_from_form_submission():
     assert task.completed == ''
     assert task.status == 'needsAction'
 
+def test_from_form_submission_clears_past_start_date():
+    form_data = MultiDict([
+        ('title', 'Test Task'),
+        ('start_date', '2024-01-1')
+    ])
+
+    task = Task.from_form_submission(form_data)
+
+    assert task.title == 'Test Task'
+    assert task.start_date == ''
+
+
 # TODO test clears old start date, complete works, skip works, invalid repeat works
