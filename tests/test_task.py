@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import datetime, date
 import pytest
 from task import Task
+from werkzeug.datastructures import MultiDict
 
 def test_from_api_response():
     # Arrange
@@ -29,3 +30,37 @@ def test_from_api_response():
     assert task.parent_id == 'parent123'
     assert task.completed == ''
     assert task.assigned_date == datetime.strptime('2024-01-20', '%Y-%m-%d').date()
+
+def test_from_form_submission():
+    # Arrange - flask uses MultiDict for form data
+    form_data = MultiDict([
+        ('task_id', 'task123'),
+        ('title', 'Test Task'),
+        ('description', 'Task description'),
+        ('priority', '2'),
+        ('start_date', '3024-01-10'), # must be in the future or it will get cleared
+        ('due_date', '2024-01-15'),
+        ('assigned_date', '2024-01-20'),
+        ('repeat', '* * * 3 C'),
+        ('parent_id', 'parent123'),
+        ('action_complete', 'false'),
+        ('action_tomorrow', 'false')
+    ])
+
+    # Act
+    task = Task.from_form_submission(form_data)
+
+    # Assert
+    assert task.id == 'task123'
+    assert task.title == 'Test Task'
+    assert task.description == 'Task description'
+    assert task.priority == 2
+    assert task.start_date == date(3024, 1, 10)
+    assert task.due_date == date(2024, 1, 15)
+    assert task.assigned_date == date(2024, 1, 20)
+    assert task.repeat == '* * * 3 C'
+    assert task.parent_id == 'parent123'
+    assert task.completed == ''
+    assert task.status == 'needsAction'
+
+# TODO test clears old start date, complete works, skip works, invalid repeat works
