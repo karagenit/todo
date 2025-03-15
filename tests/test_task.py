@@ -90,5 +90,22 @@ def test_from_form_submission_complete_action():
     assert task.assigned_date == datetime.now().date() # could fail if run at midnight
     assert task.completed == datetime.now().date().strftime('%Y-%m-%dT%H:%M:%SZ')
 
+def test_from_form_submission_complete_action_assigned_date():
+    # Arrange
+    form_data = MultiDict([
+        ('title', 'Test Task'),
+        ('action_complete', 'true'),
+        ('assigned_date', '2025-01-01')
+    ])
+
+    # Act
+    task = Task.from_form_submission(form_data)
+
+    # Assert
+    assert task.title == 'Test Task'
+    assert task.status == 'completed'
+    assert task.assigned_date == date(2025, 1, 1)
+    assert task.completed == date(2025, 1, 1).strftime('%Y-%m-%dT%H:%M:%SZ')
+
 
 # TODO test clears old start date, complete works, skip works, invalid repeat works
