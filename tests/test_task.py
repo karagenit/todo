@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import pytest
 from task import Task
 from werkzeug.datastructures import MultiDict
@@ -68,44 +68,37 @@ def test_from_form_submission_clears_past_start_date():
         ('title', 'Test Task'),
         ('start_date', '2024-01-1')
     ])
-
     task = Task.from_form_submission(form_data)
-
     assert task.title == 'Test Task'
     assert task.start_date == ''
 
 def test_from_form_submission_complete_action():
-    # Arrange
     form_data = MultiDict([
         ('title', 'Test Task'),
         ('action_complete', 'true')
     ])
-
-    # Act
     task = Task.from_form_submission(form_data)
-
-    # Assert
-    assert task.title == 'Test Task'
     assert task.status == 'completed'
     assert task.assigned_date == datetime.now().date() # could fail if run at midnight
     assert task.completed == datetime.now().date().strftime('%Y-%m-%dT%H:%M:%SZ')
 
 def test_from_form_submission_complete_action_assigned_date():
-    # Arrange
     form_data = MultiDict([
         ('title', 'Test Task'),
         ('action_complete', 'true'),
         ('assigned_date', '2025-01-01')
     ])
-
-    # Act
     task = Task.from_form_submission(form_data)
-
-    # Assert
-    assert task.title == 'Test Task'
     assert task.status == 'completed'
     assert task.assigned_date == date(2025, 1, 1)
     assert task.completed == date(2025, 1, 1).strftime('%Y-%m-%dT%H:%M:%SZ')
 
+def test_from_form_submission_skip_task():
+    form_data = MultiDict([
+        ('title', 'Test Task'),
+        ('action_tomorrow', 'true')
+    ])
+    task = Task.from_form_submission(form_data)
+    assert task.start_date == datetime.now().date() + timedelta(days=1)
 
 # TODO test clears old start date, complete works, skip works, invalid repeat works
