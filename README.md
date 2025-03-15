@@ -38,19 +38,15 @@ Version 01, Starts 01/09/23, Due 01/10/23, Medium Priority, Medium Difficulty, T
 
 ## TODO
 
-- show assigned on date, maybe auto-assign action button?
-- add default 'due' date based on priority
-- Add splitting tasks into subtasks
+- Auto-assigning tasks by priority and due dates
 - delete task button
-- repeating tasks using cron syntax (creates next upon completion)
+- Support due date repeating
 - handle auth errors/need to reauth
 - saving empty taks works but probalby fails on api
-- today button doesn't make save button appear"
+- today button doesn't make save button appear
 - dont' require priority if clicking complete button
 - allow editing subtask title
 - adjust comment box height dynamically
-- sorting tie breakers by priority
-- auto delete start dates in the past
 - allow searching for tasks; deduplicate tasks
 - clear date button
 - zero P tasks should appear before tasks with a due date in the past...
