@@ -6,6 +6,7 @@ from task import Task
 import api
 import tasklist
 import summary
+from filter import filter_tasks
 
 creds = api.get_creds()
 tasks = tasklist.from_api(creds)
@@ -15,7 +16,10 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     summary_stats = summary.get_stats(tasks)
-    sorted_tasks = get_sorted_tasks(tasks)
+
+    search_text = request.args.get('search', '')
+    filtered_tasks = filter_tasks(tasks, search_text)
+    sorted_tasks = get_sorted_tasks(filtered_tasks)
 
     for task in sorted_tasks:
         task.children = [{}]
