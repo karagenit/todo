@@ -29,7 +29,7 @@ def index():
     
     display_tasks = [Task()] + sorted_tasks[:5]
 
-    return render_template('index.html', tasks=display_tasks, stats=summary_stats)
+    return render_template('index.html', tasks=display_tasks, stats=summary_stats, search=search_text)
 
 @app.route('/update', methods=['POST'])
 def update_task():
