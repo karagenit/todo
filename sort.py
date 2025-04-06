@@ -1,12 +1,5 @@
 from datetime import datetime, timedelta
 
-def should_display_task(task):
-    today = datetime.now().date()
-    no_start_date = not task.start_date
-    starts_today_or_earlier = task.start_date and task.start_date <= today
-    no_parent = not task.parent_id
-    return (no_start_date or starts_today_or_earlier) and no_parent
-
 def task_sort_key(task):
     start_date_str = task.start_date_str()
     if not start_date_str:
@@ -32,6 +25,5 @@ def task_sort_key(task):
     # Add priority to the sort order as a tiebreaker for equal dates
     return sort_key + '-' + str(3 - task.priority)
 
-# TODO Rename to get sorted parent tasks
 def get_sorted_tasks(tasks):
-    return sorted([task for task in tasks if should_display_task(task)], key=task_sort_key)
+    return sorted(tasks, key=task_sort_key)

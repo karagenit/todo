@@ -1,25 +1,25 @@
 import pytest
 from datetime import datetime, timedelta
-from sort import should_display_task, task_sort_key, get_sorted_tasks
+from sort import task_sort_key, get_sorted_tasks
 from task import Task
 
-def test_should_display_task_no_dates():
-    task = Task(title='Test Task', priority=1)
-    assert should_display_task(task) == True
+# def test_should_display_task_no_dates():
+#     task = Task(title='Test Task', priority=1)
+#     assert should_display_task(task) == True
 
-def test_should_display_task_future_start():
-    future_date = (datetime.now() + timedelta(days=5)).date()
-    task = Task(title='Future Task', start_date=future_date)
-    assert should_display_task(task) == False
+# def test_should_display_task_future_start():
+#     future_date = (datetime.now() + timedelta(days=5)).date()
+#     task = Task(title='Future Task', start_date=future_date)
+#     assert should_display_task(task) == False
 
-def test_should_display_task_past_start():
-    past_date = (datetime.now() - timedelta(days=5)).date()
-    task = Task(title='Past Task', start_date=past_date)
-    assert should_display_task(task) == True
+# def test_should_display_task_past_start():
+#     past_date = (datetime.now() - timedelta(days=5)).date()
+#     task = Task(title='Past Task', start_date=past_date)
+#     assert should_display_task(task) == True
 
-def test_should_display_task_with_parent():
-    task = Task(title='Child Task', parent_id='Parent Task')
-    assert should_display_task(task) == False
+# def test_should_display_task_with_parent():
+#     task = Task(title='Child Task', parent_id='Parent Task')
+#     assert should_display_task(task) == False
 
 def test_task_sort_key_priority_only():
     tasks = [
@@ -80,12 +80,10 @@ def test_get_sorted_tasks():
     tasks = [
         Task(title='High Priority', priority=3),
         Task(title='Low Priority', priority=0),
-        Task(title='Medium Priority', priority=2),
-        Task(title='Future Task', start_date=(datetime.now() + timedelta(days=5)).date()),
-        Task(title='Child Task', parent_id='Parent Task')
+        Task(title='Medium Priority', priority=2)
     ]
     sorted_tasks = get_sorted_tasks(tasks)
-    assert len(sorted_tasks) == 3  # Only tasks without parent and not in future
+    assert len(sorted_tasks) == 3
     assert sorted_tasks[0].priority == 0
     assert sorted_tasks[1].priority == 3
     assert sorted_tasks[2].priority == 2
