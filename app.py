@@ -18,7 +18,7 @@ def index():
     summary_stats = summary.get_stats(tasks)
 
     search_text = request.args.get('search', '')
-    filtered_tasks = filter_tasks(tasks, search_text)
+    filtered_tasks = filter_tasks(tasks, search_text, True, True)
     sorted_tasks = get_sorted_tasks(filtered_tasks)
 
     for task in sorted_tasks:
