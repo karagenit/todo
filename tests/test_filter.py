@@ -1,5 +1,6 @@
-from filter import filter_tasks_by_text
+from filter import filter_tasks_by_text, filter_tasks_by_children, filter_tasks_by_start
 from task import Task
+from datetime import date, timedelta
 
 def test_by_text__empty_search():
     tasks = [
@@ -51,3 +52,50 @@ def test_by_text__no_matches():
     ]
     result = filter_tasks_by_text(tasks, "xyz")
     assert len(result) == 0
+
+def test_by_children__hide_children():
+    tasks = [
+        Task("Parent task", "Main task"),
+        Task("Child task", "Sub task", parent_id=1)
+    ]
+    result = filter_tasks_by_children(tasks, True)
+    assert len(result) == 1
+    assert result[0].title == "Parent task"
+
+def test_by_children__show_children():
+    tasks = [
+        Task("Parent task", "Main task"),
+        Task("Child task", "Sub task", parent_id=1)
+    ]
+    result = filter_tasks_by_children(tasks, False)
+    assert result == tasks
+
+def test_by_start__hide_future():
+    today = date.today()
+    tomorrow = today + timedelta(days=1)
+    tasks = [
+        Task("Current task", "Do today", start_date=today),
+        Task("Future task", "Do tomorrow", start_date=tomorrow)
+    ]
+    result = filter_tasks_by_start(tasks, True)
+    assert len(result) == 1
+    assert result[0].title == "Current task"
+
+def test_by_start__show_all():
+    today = date.today()
+    tomorrow = today + timedelta(days=1)
+    tasks = [
+        Task("Current task", "Do today", start_date=today),
+        Task("Future task", "Do tomorrow", start_date=tomorrow)
+    ]
+    result = filter_tasks_by_start(tasks, False)
+    assert result == tasks
+
+def test_by_start__no_start_date():
+    today = date.today()
+    tasks = [
+        Task("No date task", "Do whenever"),
+        Task("Current task", "Do today", start_date=today)
+    ]
+    result = filter_tasks_by_start(tasks, True)
+    assert len(result) == 2
