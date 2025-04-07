@@ -36,9 +36,13 @@ def filter_tasks_by_start(tasks, show_future):
     
     filtered = []
     for task in tasks:
-        no_start_date = not task.start_date
-        starts_today_or_earlier = task.start_date and task.start_date <= today
-        if no_start_date or starts_today_or_earlier:
+        if task.assigned_date:
+            if task.assigned_date <= today:
+                filtered.append(task)
+        elif task.start_date:
+            if task.start_date <= today:
+                filtered.append(task)
+        else:
             filtered.append(task)
     return filtered
 
