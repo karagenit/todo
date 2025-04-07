@@ -1,10 +1,10 @@
 from task import Task
 from datetime import date
 
-def filter_tasks(tasks, search_text, hide_children, hide_future):
-    tasks = filter_tasks_by_text(tasks, search_text)
-    tasks = filter_tasks_by_children(tasks, hide_children)
-    tasks = filter_tasks_by_start(tasks, hide_future)
+def filter_tasks(tasks, filter_args):
+    tasks = filter_tasks_by_text(tasks, filter_args.search)
+    tasks = filter_tasks_by_children(tasks, filter_args.hide_children)
+    tasks = filter_tasks_by_start(tasks, filter_args.hide_future)
     return tasks
 
 def filter_tasks_by_text(tasks, search_text):

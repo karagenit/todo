@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from repeat import validate_repeat, next_repeat_date
 from sort import task_sort_key, get_sorted_tasks
 from task import Task
+from filter_args import FilterArgs
 import api
 import tasklist
 import summary
@@ -17,8 +18,8 @@ app = Flask(__name__)
 def index():
     summary_stats = summary.get_stats(tasks)
 
-    search_text = request.args.get('search', '')
-    filtered_tasks = filter_tasks(tasks, search_text, True, True)
+    filter_args = FilterArgs(request.args)
+    filtered_tasks = filter_tasks(tasks, filter_args)
     sorted_tasks = get_sorted_tasks(filtered_tasks)
 
     for task in sorted_tasks:
@@ -29,7 +30,7 @@ def index():
     
     display_tasks = [Task()] + sorted_tasks[:5]
 
-    return render_template('index.html', tasks=display_tasks, stats=summary_stats, search=search_text)
+    return render_template('index.html', tasks=display_tasks, stats=summary_stats, search=filter_args.search) # TODO pass whole filter args here
 
 @app.route('/update', methods=['POST'])
 def update_task():
