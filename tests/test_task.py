@@ -31,6 +31,19 @@ def test_from_api_response():
     assert task.completed == ''
     assert task.assigned_date == datetime.strptime('2024-01-20', '%Y-%m-%d').date()
 
+# Previously repeat was just stored as "#R:" but then we differentiated into repeat_start and repeat_due. But if a task still has legacy repeat data we should treat it like repeat_start
+def test_from_api_response__legacy_repeat():
+    api_response = {
+        'id': 'task123',
+        'title': 'Test Task',
+        'notes': '#R:* * * 3 C',
+        'completed': '',
+        'status': 'needsAction',
+        'due': '2024-01-20T10:00:00.000Z'
+    }
+    task = Task.from_api_response(api_response)
+    assert task.repeat_start == '* * * 3 C'
+
 def test_from_form_submission():
     # Arrange - flask uses MultiDict for form data
     form_data = MultiDict([
