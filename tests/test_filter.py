@@ -70,14 +70,14 @@ def test_by_children__show_children():
     result = filter_tasks_by_children(tasks, False)
     assert result == tasks
 
-def test_by_start__hide_future():
+def test_by_start__show_future():
     today = date.today()
     tomorrow = today + timedelta(days=1)
     tasks = [
         Task("Current task", "Do today", start_date=today),
         Task("Future task", "Do tomorrow", start_date=tomorrow)
     ]
-    result = filter_tasks_by_start(tasks, True)
+    result = filter_tasks_by_start(tasks, False)
     assert len(result) == 1
     assert result[0].title == "Current task"
 
@@ -88,7 +88,7 @@ def test_by_start__show_all():
         Task("Current task", "Do today", start_date=today),
         Task("Future task", "Do tomorrow", start_date=tomorrow)
     ]
-    result = filter_tasks_by_start(tasks, False)
+    result = filter_tasks_by_start(tasks, True)
     assert result == tasks
 
 def test_by_start__no_start_date():
@@ -97,5 +97,5 @@ def test_by_start__no_start_date():
         Task("No date task", "Do whenever"),
         Task("Current task", "Do today", start_date=today)
     ]
-    result = filter_tasks_by_start(tasks, True)
+    result = filter_tasks_by_start(tasks, False)
     assert len(result) == 2
