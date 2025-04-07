@@ -14,7 +14,7 @@
     </form>
 
     <form action="/" method="GET" class="mt-4">
-        <input type="text" name="search" value="{{ search }}" placeholder="Search tasks..." class="border border-gray-400 rounded px-2 py-1 text-sm">
+        <input type="text" name="search" value="{{ filter_args.search }}" placeholder="Search tasks..." class="border border-gray-400 rounded px-2 py-1 text-sm">
         <button type="submit" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded text-sm ml-2">Search</button>
         <button type="submit" onclick="this.form.search.value=''" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded text-sm ml-2">Clear</button>
     </form>    
