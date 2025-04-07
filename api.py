@@ -68,3 +68,9 @@ def move_task(creds, task_id, parent_id, previous_id=None):
         previous=previous_id
     ).execute()
     return result
+
+def delete_task(creds, task):
+    return build("tasks", "v1", credentials=creds).tasks().patch(
+        tasklist="MDk5NzIwMDMyNTExNzU4MzkzMjI6MDow",
+        task=task.id
+    ).execute()

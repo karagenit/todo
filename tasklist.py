@@ -2,6 +2,7 @@ from task import Task
 import api
 from typing import Dict, List
 from repeat import validate_repeat, next_repeat_task
+from datetime import datetime, timedelta, date
 
 # TODO maybe this could be a TaskList class, where it stores the creds inside it? That way we don't have to have the global creds we always pass in...
 
@@ -15,7 +16,10 @@ def from_api_response(results: Dict) -> List[Task]:
 
 def upsert_task(creds, tasks, task):
     if task.id:
-        update_task(creds, tasks, task)
+        if task.deleted:
+            delete_task(creds, tasks, task)
+        else:
+            update_task(creds, tasks, task)
     else:
         insert_task(creds, tasks, task)
 
@@ -34,3 +38,13 @@ def insert_task(creds, tasks, task):
     if task.parent_id:
         api.move_task(creds, task.id, task.parent_id, None)
     tasks.append(task)
+
+def delete_task(creds, tasks, task):
+    # FIXME this throws a 500 internal server error on google's side...
+    # api.delete_task(creds, task)
+    # tasks[:] = [t for t in tasks if t.id != task.id]
+    # TODO as a temporary hack we'll set it completed but without assigned date
+    task.assigned_date = ''
+    task.completed = datetime.now().date().strftime('%Y-%m-%dT%H:%M:%SZ')
+    task.status = 'completed'
+    update_task(creds, tasks, task)

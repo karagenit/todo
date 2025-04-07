@@ -18,6 +18,7 @@ class Task:
         self.id = ''
         self.parent_id = parent_id
         self.children = []
+        self.deleted = False
 
     # Getters used in the html template
     def start_date_str(self):
@@ -92,6 +93,7 @@ class Task:
 
         do_complete_task = form_data.get('action_complete') == 'true'
         do_skip_task = form_data.get('action_tomorrow') == 'true'
+        do_delete_task = form_data.get('action_delete') == 'true'
 
         # Clear start dates from the past
         if task.start_date and task.start_date <= datetime.now().date() and not do_complete_task:
@@ -100,6 +102,9 @@ class Task:
         # Handle tomorrow action
         if do_skip_task:
             task.start_date = datetime.now().date() + timedelta(days=1)
+
+        if do_delete_task:
+            task.deleted = True
         
         # Handle completion
         if do_complete_task:

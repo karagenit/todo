@@ -55,6 +55,7 @@
                 <input type="number" name="priority" value="{{ task.priority }}" max="3" min="0" placeholder="P#" class="w-9 border rounded border-gray-400 pl-1 focus:outline-none">
                 {% if task.id %}
                 <button type="submit" name="action_complete" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded ml-2">✓</button>
+                <button type="submit" name="action_delete" value="true" onclick="return confirm('Are you sure you want to delete this task?')" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded ml-2">X</button>
                 {% endif %}
             </div>        
             <div class="flex flex-row flex-wrap mb-2 gap-x-6 gap-y-2">

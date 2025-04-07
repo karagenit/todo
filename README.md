@@ -25,7 +25,6 @@ T: Time in Minutes
 ## TODO
 
 - Auto-assigning tasks by priority and due dates
-- delete task button
 - Support due date repeating
 - handle auth errors/need to reauth
 - saving empty taks works but probalby fails on api
