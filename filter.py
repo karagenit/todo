@@ -5,6 +5,7 @@ def filter_tasks(tasks, filter_args):
     tasks = filter_tasks_by_text(tasks, filter_args.search)
     tasks = filter_tasks_by_children(tasks, filter_args.hide_children)
     tasks = filter_tasks_by_start(tasks, filter_args.show_future)
+    tasks = filter_tasks_by_priority(tasks, filter_args.priority)
     return tasks
 
 def filter_tasks_by_text(tasks, search_text):
@@ -40,4 +41,14 @@ def filter_tasks_by_start(tasks, show_future):
         if no_start_date or starts_today_or_earlier:
             filtered.append(task)
     return filtered
+
+def filter_tasks_by_priority(tasks, priority):
+    if not priority:
+        return tasks
+    filtered = []
+    for task in tasks:
+        if task.priority == priority:
+            filtered.append(task)
+    return filtered
+
     

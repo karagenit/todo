@@ -48,3 +48,4 @@ def delete_task(creds, tasks, task):
     task.completed = datetime.now().date().strftime('%Y-%m-%dT%H:%M:%SZ')
     task.status = 'completed'
     update_task(creds, tasks, task)
+    # TODO make sure repeat doens't create a new one when deleting here
