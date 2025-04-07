@@ -1,4 +1,4 @@
-from filter import filter_tasks_by_text, filter_tasks_by_children, filter_tasks_by_start
+from filter import filter_tasks_by_text, filter_tasks_by_children, filter_tasks_by_start, filter_tasks_by_priority
 from task import Task
 from datetime import date, timedelta
 
@@ -99,3 +99,12 @@ def test_by_start__no_start_date():
     ]
     result = filter_tasks_by_start(tasks, False)
     assert len(result) == 2
+
+def test_by_priority():
+    tasks = [
+        Task("High priority", "Important task", priority=3),
+        Task("Low priority", "Less important task", priority=1)
+    ]
+    result = filter_tasks_by_priority(tasks, 3)
+    assert len(result) == 1
+    assert result[0].title == "High priority"
