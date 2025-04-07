@@ -8,7 +8,7 @@ def test_from_api_response():
     api_response = {
         'id': 'task123',
         'title': 'Test Task',
-        'notes': 'Task description\n#P:2\n#D:2024-01-15\n#S:2024-01-10\n#R:* * * 3 C', # TODO update for repeat_start
+        'notes': 'Task description\n#P:2\n#D:2024-01-15\n#S:2024-01-10\n#RS:* * * 3 C',
         'completed': '',
         'status': 'needsAction',
         'parent': 'parent123',
@@ -25,7 +25,7 @@ def test_from_api_response():
     assert task.priority == 2
     assert task.due_date == datetime.strptime('2024-01-15', '%Y-%m-%d').date()
     assert task.start_date == datetime.strptime('2024-01-10', '%Y-%m-%d').date()
-    assert task.repeat == '* * * 3 C'
+    assert task.repeat_start == '* * * 3 C'
     assert task.status == 'needsAction'
     assert task.parent_id == 'parent123'
     assert task.completed == ''
@@ -41,7 +41,11 @@ def test_from_form_submission():
         ('start_date', '3024-01-10'), # must be in the future or it will get cleared
         ('due_date', '2024-01-15'),
         ('assigned_date', '2024-01-20'),
-        ('repeat', '* * * 3 C'),
+        ('repeat-start-dom', '*'),
+        ('repeat-start-moy', '*'),
+        ('repeat-start-dow', '*'),
+        ('repeat-start-days', '3'),
+        ('repeat-start-from', 'C'),
         ('parent_id', 'parent123'),
         ('action_complete', 'false'),
         ('action_tomorrow', 'false')
@@ -58,7 +62,7 @@ def test_from_form_submission():
     assert task.start_date == date(3024, 1, 10)
     assert task.due_date == date(2024, 1, 15)
     assert task.assigned_date == date(2024, 1, 20)
-    assert task.repeat == '* * * 3 C'
+    assert task.repeat_start == '* * * 3 C'
     assert task.parent_id == 'parent123'
     assert task.completed == ''
     assert task.status == 'needsAction'
@@ -118,7 +122,7 @@ def test_to_api_format():
         due_date=date(2024, 1, 15),
         start_date=date(2024, 1, 10),
         assigned_date=date(2024, 1, 20),
-        repeat='* * * 3 C'
+        repeat_start='* * * 3 C'
     )
     
     api_format = task.to_api_format()
@@ -129,7 +133,7 @@ def test_to_api_format():
         '#P:2\n'
         '#S:2024-01-10\n'
         '#D:2024-01-15\n'
-        '#R:* * * 3 C'
+        '#RS:* * * 3 C'
     )
     assert api_format['completed'] == ''
     assert api_format['status'] == 'needsAction'
