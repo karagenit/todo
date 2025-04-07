@@ -30,6 +30,13 @@
             <option value="1" {% if filter_args.priority == 1 %}selected{% endif %}>P1</option>
             <option value="0" {% if filter_args.priority == 0 %}selected{% endif %}>P0</option>
         </select>
+        <select name="count" class="border border-gray-400 rounded px-2 py-1 text-sm ml-2" onchange="this.form.submit()">
+            <option value="5" {% if filter_args.count == 5 %}selected{% endif %}>5</option>
+            <option value="10" {% if filter_args.count == 10 %}selected{% endif %}>10</option>
+            <option value="25" {% if filter_args.count == 25 %}selected{% endif %}>25</option>
+            <option value="50" {% if filter_args.count == 50 %}selected{% endif %}>50</option>
+            <option value="100" {% if filter_args.count == 100 %}selected{% endif %}>100</option>
+        </select>
     </form>        
     <table class="mt-4">
         <tr class="bg-gray-200">

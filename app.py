@@ -28,7 +28,8 @@ def index():
             if potential_child.parent_id == task.id:
                 task.children.append(potential_child)
     
-    display_tasks = [Task()] + sorted_tasks[:5]
+    tasks_to_show = filter_args.count
+    display_tasks = [Task()] + sorted_tasks[:tasks_to_show]
 
     return render_template('index.html', tasks=display_tasks, stats=summary_stats, filter_args=filter_args)
 

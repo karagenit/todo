@@ -9,6 +9,7 @@ class FilterArgs:
         self.priority = request_args.get('priority', None)
         if self.priority:
             self.priority = int(self.priority)
+        self.count = int(request_args.get('count', 5))
 
     def to_url_params(self):
         params = {}
@@ -18,4 +19,6 @@ class FilterArgs:
             params['show_future'] = 'on'
         if self.priority:
             params['priority'] = self.priority
+        if self.count:
+            params['count'] = self.count
         return '?' + urlencode(params, quote_via=quote_plus) if params else ''
