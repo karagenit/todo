@@ -8,7 +8,7 @@ def test_from_api_response():
     api_response = {
         'id': 'task123',
         'title': 'Test Task',
-        'notes': 'Task description\n#P:2\n#D:2024-01-15\n#S:2024-01-10\n#R:* * * 3 C',
+        'notes': 'Task description\n#P:2\n#D:2024-01-15\n#S:2024-01-10\n#R:* * * 3 C', # TODO update for repeat_start
         'completed': '',
         'status': 'needsAction',
         'parent': 'parent123',

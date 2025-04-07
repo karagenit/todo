@@ -3,14 +3,14 @@ from datetime import datetime, timedelta, date
 
 class Task:
     def __init__(self, title: str = '', description: str = '', priority: int = 0, due_date: date = None, 
-                 start_date: date = None, assigned_date: date = None, repeat: str = '', parent_id: str = ''):
+                 start_date: date = None, assigned_date: date = None, repeat_start: str = '', parent_id: str = ''):
         self.title = title
         self.description = description
         self.priority = priority
         self.due_date = due_date
         self.start_date = start_date
         self.assigned_date = assigned_date
-        self.repeat = repeat
+        self.repeat_start = repeat_start
         self.notes = ''
         # TODO get rid of this field? It's API only so we could just generate it in to_api_format
         self.completed = '' # String, full-length date of when completed
@@ -32,6 +32,29 @@ class Task:
 
     def assigned_date_longstr(self):
         return self.assigned_date.strftime('%Y-%m-%dT%H:%M:%SZ') if self.assigned_date else ''
+
+    def repeat_start_fields(self):
+        return self.repeat_start.split() if self.repeat_start else []
+    
+    def repeat_start_dom(self):
+        fields = self.repeat_start_fields()
+        return fields[0] if len(fields) > 0 else ''
+
+    def repeat_start_moy(self):
+        fields = self.repeat_start_fields()
+        return fields[1] if len(fields) > 1 else ''
+
+    def repeat_start_dow(self):
+        fields = self.repeat_start_fields()
+        return fields[2] if len(fields) > 2 else ''
+
+    def repeat_start_days(self):
+        fields = self.repeat_start_fields()
+        return fields[3] if len(fields) > 3 else ''
+
+    def repeat_start_from(self):
+        fields = self.repeat_start_fields()
+        return fields[4] if len(fields) > 4 else ''
 
     @classmethod
     def from_api_response(cls, response_data):
@@ -57,7 +80,9 @@ class Task:
                     date_str = field[3:].strip()
                     task.start_date = datetime.strptime(date_str, '%Y-%m-%d').date()
                 elif field.startswith('#R:'):
-                    task.repeat = field[3:].strip()
+                    task.repeat_start = field[3:].strip() # legacy import for old repeat fields
+                elif field.startswith('#RS:'):
+                    task.repeat_start = field[4:].strip()
             except ValueError:
                 pass
                 
@@ -78,8 +103,6 @@ class Task:
         task.title = form_data.get('title')
         task.description = form_data.get('description', '')
         task.priority = form_data.get('priority', type=int, default=0)
-        # TODO cleanup
-        task.repeat = form_data.get('repeat', '')
         task.parent_id = form_data.get('parent_id')
 
         start_date_str = form_data.get('start_date', '')
@@ -117,6 +140,13 @@ class Task:
         # Handle repeat validation
         # if not validate_repeat(task.repeat):
         #     task.repeat = ''
+
+        repeat_start_dom = form_data.get('repeat-start-dom', '')
+        repeat_start_moy = form_data.get('repeat-start-moy', '')
+        repeat_start_dow = form_data.get('repeat-start-dow', '')
+        repeat_start_days = form_data.get('repeat-start-days', '')
+        repeat_start_from = form_data.get('repeat-start-from', '')
+        task.repeat_start = f"{repeat_start_dom} {repeat_start_moy} {repeat_start_dow} {repeat_start_days} {repeat_start_from}"
         
         return task
 
@@ -128,8 +158,8 @@ class Task:
             notes += f"#S:{self.start_date_str()}\n"
         if self.due_date:
             notes += f"#D:{self.due_date_str()}\n"
-        if self.repeat:
-            notes += f"#R:{self.repeat}\n"
+        if self.repeat_start:
+            notes += f"#RS:{self.repeat_start}\n"
         
         task = {
             'title': self.title,

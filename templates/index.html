@@ -69,34 +69,40 @@
                 <input type="text" name="title" value="{{ task.title }}" placeholder="Task Title" class="flex-grow mr-2 border-b border-gray-400 focus:outline-none pl-1 font-medium">
                 <input type="number" name="priority" value="{{ task.priority }}" max="3" min="0" placeholder="P#" class="w-9 border rounded border-gray-400 pl-1 focus:outline-none">
                 {% if task.id %}
-                <button type="submit" name="action_complete" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded ml-2">✓</button>
-                <button type="submit" name="action_delete" value="true" onclick="return confirm('Are you sure you want to delete this task?')" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded ml-2">X</button>
+                <button type="submit" name="action_complete" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded ml-2 h-7 w-7">✓</button>
+                <button type="submit" name="action_delete" value="true" onclick="return confirm('Are you sure you want to delete this task?')" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded h-7 w-7 ml-2">X</button>
+                <button type="submit" name="action_tomorrow" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded h-7 w-7 ml-2">→</button>
                 {% endif %}
             </div>        
-            <div class="flex flex-row flex-wrap mb-2 gap-x-6 gap-y-2">
+            <div class="flex flex-row flex-wrap mb-2 gap-y-2">
                 <div class="flex flex-row items-center min-w-[200px] flex-1">
                     <span class="mr-1.5 text-sm text-gray-700">Start</span>
                     <input class="border rounded border-gray-400 px-1 mr-2 h-7 text-sm flex-grow" type="date" name="start_date" value="{{ task.start_date_str() }}">
-                    <button type="submit" name="action_tomorrow" value="true" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded h-7">→</button>
                 </div>
-                <div class="flex flex-row items-center min-w-[200px] flex-1">
+                <div class="flex flex-row items-center min-w-[200px] flex-1 ml-6">
                     <span class="mr-1.5 text-sm text-gray-700">Due</span>
                     <input class="border rounded border-gray-400 px-1 h-7 text-sm flex-grow" type="date" name="due_date" value="{{ task.due_date_str() }}">
-                    <button type="button" onclick="this.parentElement.querySelector('input[name=due_date]').valueAsDate = new Date(new Date().toLocaleDateString())" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded ml-2 h-7 w-7">!</button>
+                    <!-- <button type="button" onclick="this.parentElement.querySelector('input[name=due_date]').valueAsDate = new Date(new Date().toLocaleDateString())" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded ml-2 h-7 w-7">!</button> -->
                 </div>
-                <div class="flex flex-row items-center min-w-[200px] flex-1">
+                <div class="flex flex-row items-center min-w-[200px] flex-1 ml-6">
                     <span class="mr-1.5 text-sm text-gray-700">Assigned</span>
                     <input class="border rounded border-gray-400 px-1 h-7 text-sm flex-grow" type="date" name="assigned_date" value="{{ task.assigned_date_str() }}">
                 </div>
-                <div class="flex flex-row items-center min-w-[74px] flex-1">
-                    <button type="button" onclick="document.getElementById('repeat-row-{{ task.id }}').classList.toggle('hidden')" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded h-7 text-sm">+ Repeat</button>
+                <div class="flex flex-row items-center min-w-[7px] flex-0 ml-2">
+                    <button type="button" onclick="document.getElementById('repeat-row-{{ task.id }}').classList.toggle('hidden')" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded h-7 w-7 text-sm">&#8634;</button>
                 </div>            
-            </div>
-            <div class="{% if not task.repeat %}hidden{% endif %} flex flex-row flex-wrap mb-2 gap-x-6 gap-y-2" id="repeat-row-{{ task.id }}">
+            </div> <!-- todo show this if due_repeat as well etc -->
+            <div class="{% if not task.repeat_start %}hidden{% endif %} flex flex-row flex-wrap mb-2 gap-x-6 gap-y-2" id="repeat-row-{{ task.id }}">
                 <div id="repeat-field" class="flex flex-row items-center flex-1">
-                    <span class="mr-1.5 text-sm text-gray-700">Repeat</span>
-                    <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 flex-grow" type="text" name="repeat" value="{{ task.repeat }}"
-                        placeholder="DoM[1-31] MoY[1-12] DoW[0-6] DaysInterval[0-999] FromStartOrComplete[SC]">
+                    <!-- <span class="mr-1.5 text-sm text-gray-700">Repeat</span> -->
+                    <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11" name="repeat-start-dom" value="{{ task.repeat_start_dom() }}" min="1" max="31" placeholder="DoM">
+                    <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-start-moy" value="{{ task.repeat_start_moy() }}" min="1" max="12" placeholder="MoY">
+                    <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-start-dow" value="{{ task.repeat_start_dow() }}" min="0" max="6" placeholder="DoW">
+                    <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-start-days" value="{{ task.repeat_start_days() }}" min="0" max="999" placeholder="Days">
+                    <select class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-start-from">
+                        <option value="S" {% if task.repeat_start_from() == 'S' %}selected{% endif %}>S</option>
+                        <option value="C" {% if task.repeat_start_from() == 'C' %}selected{% endif %}>C</option>
+                    </select>
                 </div>
             </div>
             <textarea name="description" class="bg-gray-100 rounded p-1 text-sm text-gray-700">{{ task.description }}</textarea>
