@@ -30,7 +30,6 @@ T: Time in Minutes
 - handle auth errors/need to reauth
 - saving empty taks works but probalby fails on api
 - today button doesn't make save button appear
-- dont' require priority if clicking complete button
 - allow editing subtask title
 - adjust comment box height dynamically
 - allow searching for tasks; deduplicate tasks

@@ -47,7 +47,7 @@ def update_task():
     #         previous_task = sorted_tasks[task_index - 1]
     #         move_task(creds, task_id, None, previous_task['id'])
     
-    return redirect('/')
+    return redirect('/' + FilterArgs(request.args).to_url_params())
 
 @app.route('/reload')
 def reload_tasks():
