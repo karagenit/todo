@@ -92,9 +92,8 @@
                     <button type="button" onclick="document.getElementById('repeat-row-{{ task.id }}').classList.toggle('hidden')" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-1.5 rounded h-7 w-7 text-sm">&#8634;</button>
                 </div>            
             </div> <!-- todo show this if due_repeat as well etc -->
-            <div class="{% if not task.repeat_start %}hidden{% endif %} flex flex-row flex-wrap mb-2 gap-x-6 gap-y-2" id="repeat-row-{{ task.id }}">
-                <div id="repeat-field" class="flex flex-row items-center flex-1">
-                    <!-- <span class="mr-1.5 text-sm text-gray-700">Repeat</span> -->
+            <div class="{% if (not task.repeat_start) and (not task.repeat_due) %}hidden{% endif %} flex flex-row flex-wrap mb-2 gap-x-6 gap-y-2" id="repeat-row-{{ task.id }}">
+                <div class="flex flex-row items-center flex-1">
                     <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11" name="repeat-start-dom" value="{{ task.repeat_start_dom() }}" min="1" max="31" placeholder="DoM">
                     <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-start-moy" value="{{ task.repeat_start_moy() }}" min="1" max="12" placeholder="MoY">
                     <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-start-dow" value="{{ task.repeat_start_dow() }}" min="0" max="6" placeholder="DoW">
@@ -102,6 +101,16 @@
                     <select class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-start-from">
                         <option value="S" {% if task.repeat_start_from() == 'S' %}selected{% endif %}>S</option>
                         <option value="C" {% if task.repeat_start_from() == 'C' %}selected{% endif %}>C</option>
+                    </select>
+                </div>
+                <div class="flex flex-row items-center flex-1">
+                    <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11" name="repeat-due-dom" value="{{ task.repeat_due_dom() }}" min="1" max="31" placeholder="DoM">
+                    <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-due-moy" value="{{ task.repeat_due_moy() }}" min="1" max="12" placeholder="MoY">
+                    <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-due-dow" value="{{ task.repeat_due_dow() }}" min="0" max="6" placeholder="DoW">
+                    <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-due-days" value="{{ task.repeat_due_days() }}" min="0" max="999" placeholder="Days">
+                    <select class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-due-from">
+                        <option value="S" {% if task.repeat_due_from() == 'S' %}selected{% endif %}>S</option>
+                        <option value="C" {% if task.repeat_due_from() == 'C' %}selected{% endif %}>C</option>
                     </select>
                 </div>
             </div>
