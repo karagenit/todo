@@ -29,7 +29,7 @@ def update_task(creds, tasks, task):
     tasks[:] = [t for t in tasks if t.id != task.id]
     if not task.completed:
         tasks.append(task)
-    if task.completed and validate_repeat(task.repeat_start):
+    if task.completed and (validate_repeat(task.repeat_start) or validate_repeat(task.repeat_due)):
         insert_task(creds, tasks, next_repeat_task(task))
 
 def insert_task(creds, tasks, task):

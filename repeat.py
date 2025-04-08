@@ -93,15 +93,19 @@ def next_repeat_date(last_date, completion_date, repeat_str):
     return None
 
 def next_repeat_task(task: Task) -> Task:
-    repeat_start_date = task.start_date or datetime.now().date()
     repeat_completed_date = datetime.now().date() # TODO should we use the actual assigned date??
-    next_start = next_repeat_date(repeat_start_date, repeat_completed_date, task.repeat_start)            
+    repeat_start_date = task.start_date or repeat_completed_date
+    repeat_due_date = task.due_date or repeat_completed_date
+    # This will just give us None if there's a blank repeat_start/repeat_due, which makes sense (just clear the field for the next task)
+    next_start = next_repeat_date(repeat_start_date, repeat_completed_date, task.repeat_start)   
+    next_due = next_repeat_date(repeat_due_date, repeat_completed_date, task.repeat_due)         
     return Task(
         title=task.title,
         description=task.description,
         start_date=next_start,
         # due_date=task.due_date + (next_start - repeat_start_date) if task.due_date else None, # TODO interesting idea but want to just have separate due repeating in the future
-        due_date=task.due_date,
+        due_date=next_due,
         repeat_start=task.repeat_start,
+        repeat_due=task.repeat_due,
         priority=task.priority
     )    
