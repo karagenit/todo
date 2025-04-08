@@ -35,6 +35,7 @@ T: Time in Minutes
 - clear date button
 - zero P tasks should appear before tasks with a due date in the past...
 - use assigned date in place of start date too (hide tasks assigned in the future)
+- deleting tasks still creates repeating task
 
 ## Devlog
 
