@@ -1,6 +1,5 @@
 import os.path
 
-from repeat import validate_repeat
 from task import Task
 
 from datetime import datetime

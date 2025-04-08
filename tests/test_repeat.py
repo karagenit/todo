@@ -1,6 +1,7 @@
 import pytest
 from datetime import datetime, timedelta
-from repeat import validate_single_repeat, validate_repeat, next_repeat_date, matches_repeat_field
+from repeat import next_repeat_date, matches_repeat_field
+from repeat_validation import validate_single_repeat, validate_repeat
 
 def test_validate_single_repeat():
     assert validate_single_repeat('*', 1, 31) == True

@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect
 from datetime import datetime, timedelta
-from repeat import validate_repeat, next_repeat_date
 from sort import task_sort_key, get_sorted_tasks
 from task import Task
 from filter_args import FilterArgs

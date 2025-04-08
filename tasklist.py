@@ -1,7 +1,8 @@
 from task import Task
 import api
 from typing import Dict, List
-from repeat import validate_repeat, next_repeat_task
+from repeat import next_repeat_task
+from repeat_validation import validate_repeat
 from datetime import datetime, timedelta, date
 
 # TODO maybe this could be a TaskList class, where it stores the creds inside it? That way we don't have to have the global creds we always pass in...
