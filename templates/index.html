@@ -99,8 +99,8 @@
                     <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-start-dow" value="{{ task.repeat_start_dow() }}" min="0" max="6" placeholder="DoW">
                     <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-start-days" value="{{ task.repeat_start_days() }}" min="0" max="999" placeholder="Days">
                     <select class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-start-from">
-                        <option value="S" {% if task.repeat_start_from() == 'S' %}selected{% endif %}>S</option>
-                        <option value="C" {% if task.repeat_start_from() == 'C' %}selected{% endif %}>C</option>
+                        <option value="S" {% if task.repeat_start_from() == 'S' %}selected{% endif %}>Start</option>
+                        <option value="C" {% if task.repeat_start_from() == 'C' %}selected{% endif %}>Compl</option>
                     </select>
                 </div>
                 <div class="flex flex-row items-center flex-1">
@@ -109,8 +109,8 @@
                     <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-due-dow" value="{{ task.repeat_due_dow() }}" min="0" max="6" placeholder="DoW">
                     <input class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-due-days" value="{{ task.repeat_due_days() }}" min="0" max="999" placeholder="Days">
                     <select class="border rounded border-gray-400 px-1 h-7 text-sm pl-2 w-11 ml-1" name="repeat-due-from">
-                        <option value="S" {% if task.repeat_due_from() == 'S' %}selected{% endif %}>S</option>
-                        <option value="C" {% if task.repeat_due_from() == 'C' %}selected{% endif %}>C</option>
+                        <option value="S" {% if task.repeat_due_from() == 'S' %}selected{% endif %}>Due</option>
+                        <option value="C" {% if task.repeat_due_from() == 'C' %}selected{% endif %}>Compl</option>
                     </select>
                 </div>
             </div>

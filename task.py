@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, date
-# from repeat import validate_repeat
+from repeat_validation import validate_repeat
 
 class Task:
     def __init__(self, title: str = '', description: str = '', priority: int = 0, due_date: date = None, 
@@ -162,17 +162,14 @@ class Task:
             task.completed = task.assigned_date_longstr()
             task.status = 'completed'
 
-        # TODO fix circular dependency here 
-        # Handle repeat validation
-        # if not validate_repeat(task.repeat):
-        #     task.repeat = ''
-
         repeat_start_dom = form_data.get('repeat-start-dom', '')
         repeat_start_moy = form_data.get('repeat-start-moy', '')
         repeat_start_dow = form_data.get('repeat-start-dow', '')
         repeat_start_days = form_data.get('repeat-start-days', '')
         repeat_start_from = form_data.get('repeat-start-from', '')
         task.repeat_start = f"{repeat_start_dom} {repeat_start_moy} {repeat_start_dow} {repeat_start_days} {repeat_start_from}"
+        if not validate_repeat(task.repeat_start):
+            task.repeat_start = ''        
 
         repeat_due_dom = form_data.get('repeat-due-dom', '')
         repeat_due_moy = form_data.get('repeat-due-moy', '')
@@ -180,6 +177,8 @@ class Task:
         repeat_due_days = form_data.get('repeat-due-days', '')
         repeat_due_from = form_data.get('repeat-due-from', '')
         task.repeat_due = f"{repeat_due_dom} {repeat_due_moy} {repeat_due_dow} {repeat_due_days} {repeat_due_from}"
+        if not validate_repeat(task.repeat_due):
+            task.repeat_due = ''
 
         return task
 
