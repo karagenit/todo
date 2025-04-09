@@ -33,8 +33,21 @@ def test_upsert_task__new_task(mock_insert_task):
     assert len(tasks) == 4
     assert any(t.id == "newtask" for t in tasks)
       
-def test_upsert_task__new_subtask():
-    return
+@patch('api.insert_task')
+@patch('api.move_task')
+def test_upsert_task__new_subtask(mock_move_task, mock_insert_task):
+    mock_insert_task.return_value = MOCK_API_PATCH_RESP
+    tasks = mock_tasklist()
+    new_task = mock_task()
+    new_task.id = ''
+    new_task.parent_id = tasks[0].id
+
+    upsert_task(TEST_CREDS, tasks, new_task)
+
+    mock_insert_task.assert_called_once_with(TEST_CREDS, new_task)
+    mock_move_task.assert_called_once_with(TEST_CREDS, "newtask", tasks[0].id, None)
+    assert len(tasks) == 4
+    assert tasks[3].parent_id == tasks[0].id
 
 def test_upsert_task__edit_task():
     return
