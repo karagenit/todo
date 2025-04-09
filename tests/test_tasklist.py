@@ -9,10 +9,12 @@ import api
 
 TEST_CREDS = {"token": "test_token"}
 
-def mock_task():
-    return Task(id="task0", title="Task 0")
+@pytest.fixture
+def task():
+    return Task(title="Task 0")
 
-def mock_tasklist():
+@pytest.fixture
+def tasks():
     return [
         Task(id="task1", title="Task 1", description="Notes 1"),
         Task(id="task2", title="Task 2", description="Notes 2"),
@@ -29,26 +31,16 @@ def mock_api(monkeypatch):
     monkeypatch.setattr(api, 'delete_task', mock_api.delete_task)
     return mock_api
 
-def test_upsert_task__new_task(mock_api):
-    tasks = mock_tasklist()
-    new_task = mock_task()
-    new_task.id = ''
-    
-    upsert_task(TEST_CREDS, tasks, new_task)
-    
-    mock_api.insert_task.assert_called_once_with(TEST_CREDS, new_task)
+def test_upsert_task__new_task(mock_api, tasks, task):    
+    upsert_task(TEST_CREDS, tasks, task)
+    mock_api.insert_task.assert_called_once_with(TEST_CREDS, task)
     assert len(tasks) == 4
     assert any(t.id == "newtask" for t in tasks)
     
-def test_upsert_task__new_subtask(mock_api):
-    tasks = mock_tasklist()
-    new_task = mock_task()
-    new_task.id = ''
-    new_task.parent_id = tasks[0].id
-
-    upsert_task(TEST_CREDS, tasks, new_task)
-
-    mock_api.insert_task.assert_called_once_with(TEST_CREDS, new_task)
+def test_upsert_task__new_subtask(mock_api, tasks, task):
+    task.parent_id = tasks[0].id
+    upsert_task(TEST_CREDS, tasks, task)
+    mock_api.insert_task.assert_called_once_with(TEST_CREDS, task)
     mock_api.move_task.assert_called_once_with(TEST_CREDS, "newtask", tasks[0].id, None)
     assert len(tasks) == 4
     assert tasks[3].parent_id == tasks[0].id
