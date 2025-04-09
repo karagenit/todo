@@ -8,7 +8,6 @@ from task import Task
 import api
 
 TEST_CREDS = {"token": "test_token"}
-MOCK_API_PATCH_RESP = {"id": "newtask"}
 
 def mock_task():
     return Task(id="task0", title="Task 0")
@@ -20,23 +19,28 @@ def mock_tasklist():
         Task(id="task3", title="Task 3", description="Notes 3")
     ]
 
-@patch('api.insert_task')
-def test_upsert_task__new_task(mock_insert_task):
-    mock_insert_task.return_value = MOCK_API_PATCH_RESP
+@pytest.fixture
+def mock_api(monkeypatch):
+    mock_api = MagicMock()
+    mock_api.insert_task.return_value = {"id": "newtask"}
+    monkeypatch.setattr(api, 'insert_task', mock_api.insert_task)
+    monkeypatch.setattr(api, 'move_task', mock_api.move_task)
+    monkeypatch.setattr(api, 'patch_task', mock_api.patch_task)
+    monkeypatch.setattr(api, 'delete_task', mock_api.delete_task)
+    return mock_api
+
+def test_upsert_task__new_task(mock_api):
     tasks = mock_tasklist()
     new_task = mock_task()
     new_task.id = ''
     
     upsert_task(TEST_CREDS, tasks, new_task)
     
-    mock_insert_task.assert_called_once_with(TEST_CREDS, new_task)
+    mock_api.insert_task.assert_called_once_with(TEST_CREDS, new_task)
     assert len(tasks) == 4
     assert any(t.id == "newtask" for t in tasks)
-      
-@patch('api.insert_task')
-@patch('api.move_task')
-def test_upsert_task__new_subtask(mock_move_task, mock_insert_task):
-    mock_insert_task.return_value = MOCK_API_PATCH_RESP
+    
+def test_upsert_task__new_subtask(mock_api):
     tasks = mock_tasklist()
     new_task = mock_task()
     new_task.id = ''
@@ -44,8 +48,8 @@ def test_upsert_task__new_subtask(mock_move_task, mock_insert_task):
 
     upsert_task(TEST_CREDS, tasks, new_task)
 
-    mock_insert_task.assert_called_once_with(TEST_CREDS, new_task)
-    mock_move_task.assert_called_once_with(TEST_CREDS, "newtask", tasks[0].id, None)
+    mock_api.insert_task.assert_called_once_with(TEST_CREDS, new_task)
+    mock_api.move_task.assert_called_once_with(TEST_CREDS, "newtask", tasks[0].id, None)
     assert len(tasks) == 4
     assert tasks[3].parent_id == tasks[0].id
 
