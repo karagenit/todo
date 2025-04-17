@@ -43,6 +43,20 @@ def get_tasks(creds):
         maxResults=100
     ).execute()
 
+def get_all_tasks(creds):
+    task_resource = build("tasks", "v1", credentials=creds).tasks()
+    results = []
+    request = task_resource.list(
+        tasklist="MDk5NzIwMDMyNTExNzU4MzkzMjI6MDow",
+        showCompleted=False,
+        maxResults=100
+    )
+    while request is not None:
+        result = request.execute()
+        results.append(result)
+        request = task_resource.list_next(request, result) # this is how google tasks API does pagination
+    return results
+
 # TODO error handling
 # TODO move this to TaskList object and do OOP?
 def patch_task(creds, task):

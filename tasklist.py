@@ -8,12 +8,9 @@ from datetime import datetime, timedelta, date
 # TODO maybe this could be a TaskList class, where it stores the creds inside it? That way we don't have to have the global creds we always pass in...
 
 def from_api(creds) -> List[Task]:
-    return from_api_response(api.get_tasks(creds))
-
-def from_api_response(results: Dict) -> List[Task]:
-    items = results.get("items", [])
+    api_responses = api.get_all_tasks(creds)
+    items = [item for response in api_responses for item in response.get("items", [])]
     return [Task.from_api_response(item) for item in items]
-    # TODO eventually iterate over the cursor token to get more than 100 results
 
 def upsert_task(creds, tasks, task):
     if task.id:
