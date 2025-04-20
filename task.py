@@ -146,7 +146,7 @@ class Task:
 
         # Clear start dates from the past
         if task.start_date and task.start_date <= datetime.now().date() and not do_complete_task:
-            task.start_date = ''     
+            task.start_date = '' # TODO maybe don't clear if it's a repeating task? Might need the start date for repeating basis
    
         # Handle tomorrow action
         if do_skip_task:
