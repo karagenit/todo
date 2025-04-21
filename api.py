@@ -43,13 +43,15 @@ def get_creds():
             flow = InstalledAppFlow.from_client_secrets_file(
                 "credentials.json", SCOPES
             )
-            creds = flow.run_local_server(port=0, access_type="offline", prompt="consent")
+            creds = flow.run_local_server(port=0, access_type="offline", prompt="consent") # TODO generate URL instead of running local server?
 
         # Finally, save the credentials for the next run
         with open("token.json", "w") as token:
             token.write(creds.to_json())
 
     return creds
+
+# TODO for all these API methods - creds could be expired, need to check this and re-auth in that case. May need to store creds as a global or session variable.
 
 def get_tasks(creds):
     return build("tasks", "v1", credentials=creds).tasks().list(
