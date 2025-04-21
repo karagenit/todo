@@ -9,6 +9,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from google.auth.exceptions import RefreshError
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/tasks"]
@@ -21,16 +22,30 @@ def get_creds():
     # time.
     if os.path.exists("token.json"):
         creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
+        # TODO catch ValueError (missing refresh_token) and just delete it? Ideally should never happen since we create the token w access_type=offline and prompt=consent
+
+    # If there are no creds or invalid creds, get new creds
     if not creds or not creds.valid:
+        # Whether we need an entirely new set of creds
+        should_reauth = True
+
+        # If we can, just use the refresh token to get new creds
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
+            try:
+                creds.refresh(Request())
+                should_reauth = False
+            except RefreshError:
+                # If there was a problem with the refresh token (e.g. it expired) we'll have to just get new creds
+                should_reauth = True
+        
+        # If we need to, get new creds totally
+        if should_reauth:
             flow = InstalledAppFlow.from_client_secrets_file(
                 "credentials.json", SCOPES
             )
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
+            creds = flow.run_local_server(port=0, access_type="offline", prompt="consent")
+
+        # Finally, save the credentials for the next run
         with open("token.json", "w") as token:
             token.write(creds.to_json())
 
