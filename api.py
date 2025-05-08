@@ -69,7 +69,7 @@ def get_all_tasks(creds):
         maxResults=100
     )
     while request is not None:
-        result = request.execute()
+        result = request.execute() # can throw RefreshError, need to get new creds
         results.append(result)
         request = task_resource.list_next(request, result) # this is how google tasks API does pagination
     return results
