@@ -1,6 +1,14 @@
 # todo
 Google Tasks Interface
 
+## Usage
+
+### Running the app
+
+### Testing & coverage
+
+`pytest --cov .`
+
 ## Metadata Format
 
 Appended to the description of tasks we're tracking to store some additional info for our app that google tasks doesn't store.
