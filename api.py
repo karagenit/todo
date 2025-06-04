@@ -51,6 +51,48 @@ def get_creds():
 
     return creds
 
+def get_session_creds(existing_creds=None):
+    """Gets credentials for session-based authentication (no file storage)."""
+    creds = existing_creds
+    
+    # If existing_creds is a dict (from session), convert to Credentials object
+    if isinstance(existing_creds, dict):
+        creds = Credentials.from_authorized_user_info(existing_creds, SCOPES)
+    
+    # If there are no creds or invalid creds, get new creds
+    if not creds or not creds.valid:
+        # Whether we need an entirely new set of creds
+        should_reauth = True
+
+        # If we can, just use the refresh token to get new creds
+        if creds and creds.expired and creds.refresh_token:
+            try:
+                creds.refresh(Request())
+                should_reauth = False
+            except RefreshError:
+                # If there was a problem with the refresh token (e.g. it expired) we'll have to just get new creds
+                should_reauth = True
+        
+        # If we need to, get new creds totally
+        if should_reauth:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                "credentials.json", SCOPES
+            )
+            creds = flow.run_local_server(port=0, access_type="offline", prompt="consent")
+
+    return creds
+
+def creds_to_dict(creds):
+    """Convert credentials object to dict for session storage."""
+    return {
+        'token': creds.token,
+        'refresh_token': creds.refresh_token,
+        'token_uri': creds.token_uri,
+        'client_id': creds.client_id,
+        'client_secret': creds.client_secret,
+        'scopes': creds.scopes
+    }
+
 # TODO for all these API methods - creds could be expired, need to check this and re-auth in that case. May need to store creds as a global or session variable.
 
 def get_tasks(creds):
