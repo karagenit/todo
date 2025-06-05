@@ -83,3 +83,19 @@ caleb@Calebs-MacBook-Pro todo % source /Users/caleb/python/venv/bin/activate
 5. Last Start [S] or Completion [C]
 
 Separate repeat fields for start and due? Most cases will just be start - ie start this after a certain interval but then just treat it as a p2/p3 whatever. But some cases things might have a specific due date that repeats as well.
+
+## Multi-User Refactor
+
+This repository is a google tasks wrapper with a custom UI and some extra features for tasks, like greater control of repeating logic and adding both start-after and due-before dates. Right now, the web app is only designed for one user at a time. When the app is started, get_creds in api.py is used to get the API token for that one user. Instead, we want to refactor this project to support multiple users at the same time. Instead of passing around the creds from get_creds, we should store a given user's creds as a session variable. Similarly we should not store one global 'tasks' tasklist, but should store each user's tasklist separately as a session variable. 
+
+Come up with a step-by-step plan to complete this refactor. At a minimum, we should do the following:
+1. Create a new git branch for this feature
+2. Guard each route in app.py with a check for session[creds]
+3. In the event that a user is missing session[creds], redirect to /auth
+4. Create a new route for /auth which gets a user's API token, similar to how get_creds works
+  a. This new flow should not read/write any files containing the token, just keep them in memory
+  b. This route should also reload session[tasks] as well
+  b. Once complete, this should now redirect back to '/'
+5. Update any uses of 'creds' in app.py to use session[creds] instead
+6. Update any uses of 'tasks' in app.py to use session[tasks] instead
+7. Create a test plan, including test coverage for app.py that covers these changes
