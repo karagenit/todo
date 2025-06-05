@@ -6,6 +6,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 import app
+import session
 import api
 from task import Task
 
@@ -14,7 +15,7 @@ def client():
     app.app.config['TESTING'] = True
     app.app.config['SECRET_KEY'] = 'test-key'
     # Clear session store before each test
-    app.session_store.clear()
+    session.session_store.clear()
     with app.app.test_client() as client:
         yield client
 
@@ -86,7 +87,7 @@ class TestSessionManagement:
             sess['session_id'] = 'test-session-id'
         
         # Manually set user data in session store
-        app.session_store['test-session-id'] = {
+        session.session_store['test-session-id'] = {
             'creds': mock_creds,
             'tasks': mock_tasks
         }
@@ -107,18 +108,18 @@ class TestSessionManagement:
             sess['session_id'] = 'client2-session'
         
         # Set different data in session store
-        app.session_store['client1-session'] = {
+        session.session_store['client1-session'] = {
             'creds': mock_creds,
             'tasks': [Task(id='1', title='Client 1 Task').to_dict()]
         }
-        app.session_store['client2-session'] = {
+        session.session_store['client2-session'] = {
             'creds': mock_creds,
             'tasks': [Task(id='2', title='Client 2 Task').to_dict()]
         }
         
         # Verify sessions are isolated
-        assert app.session_store['client1-session']['tasks'][0]['title'] == 'Client 1 Task'
-        assert app.session_store['client2-session']['tasks'][0]['title'] == 'Client 2 Task'
+        assert session.session_store['client1-session']['tasks'][0]['title'] == 'Client 1 Task'
+        assert session.session_store['client2-session']['tasks'][0]['title'] == 'Client 2 Task'
 
 class TestRouteOperations:
     @patch('app.api.get_session_creds')
@@ -131,7 +132,7 @@ class TestRouteOperations:
         with client.session_transaction() as sess:
             sess['session_id'] = 'test-session-id'
         
-        app.session_store['test-session-id'] = {
+        session.session_store['test-session-id'] = {
             'creds': mock_creds,
             'tasks': mock_tasks
         }
@@ -152,7 +153,7 @@ class TestRouteOperations:
         with client.session_transaction() as sess:
             sess['session_id'] = 'test-session-id'
         
-        app.session_store['test-session-id'] = {
+        session.session_store['test-session-id'] = {
             'creds': mock_creds,
             'tasks': mock_tasks
         }
@@ -221,7 +222,7 @@ class TestSessionSizeAndLoops:
             sess['session_id'] = 'test-session'
         
         # Set large data in server-side store
-        app.session_store['test-session'] = {
+        session.session_store['test-session'] = {
             'creds': mock_creds,
             'tasks': large_tasks
         }
@@ -252,9 +253,9 @@ class TestSessionSizeAndLoops:
                 with client.session_transaction() as sess:
                     session_id = sess.get('session_id')
                     assert session_id is not None
-                    assert session_id in app.session_store
-                    assert 'creds' in app.session_store[session_id]
-                    assert 'tasks' in app.session_store[session_id]
+                    assert session_id in session.session_store
+                    assert 'creds' in session.session_store[session_id]
+                    assert 'tasks' in session.session_store[session_id]
                 
                 # Second call to / should not redirect to /auth (no loop)
                 with patch('summary.get_stats'), patch('filter.filter_tasks'), patch('sort.get_sorted_tasks'):
@@ -266,7 +267,7 @@ class TestSessionSizeAndLoops:
         with client.session_transaction() as sess:
             sess['session_id'] = 'persist-test'
         
-        app.session_store['persist-test'] = {
+        session.session_store['persist-test'] = {
             'creds': mock_creds,
             'tasks': mock_tasks
         }
@@ -277,9 +278,9 @@ class TestSessionSizeAndLoops:
             assert response1.status_code == 200
         
         # Verify data still exists after request
-        assert 'persist-test' in app.session_store
-        assert app.session_store['persist-test']['creds'] == mock_creds
-        assert app.session_store['persist-test']['tasks'] == mock_tasks
+        assert 'persist-test' in session.session_store
+        assert session.session_store['persist-test']['creds'] == mock_creds
+        assert session.session_store['persist-test']['tasks'] == mock_tasks
         
         # Second request should still work
         with patch('summary.get_stats'), patch('filter.filter_tasks'), patch('sort.get_sorted_tasks'):
