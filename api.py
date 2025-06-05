@@ -1,3 +1,4 @@
+import os
 import os.path
 
 from task import Task
@@ -44,7 +45,7 @@ def get_session_creds(existing_creds=None):
             flow = Flow.from_client_secrets_file(
                 "credentials.json", 
                 scopes=SCOPES,
-                redirect_uri="http://localhost:5001/oauth/callback"
+                redirect_uri="https://localhost:5001/oauth/callback"
             )
             auth_url, state = flow.authorization_url(
                 access_type="offline",
