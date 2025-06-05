@@ -66,7 +66,6 @@ class TestAuthentication:
         mock_tasks_objects = [Task(id='1', title='Test Task 1'), Task(id='2', title='Test Task 2')]
         mock_from_api.return_value = mock_tasks_objects
         
-        # Remove the patch for creds_to_dict since we're storing the creds object directly
         response = client.get('/auth')
         assert response.status_code == 302
         assert response.location == '/'
@@ -114,7 +113,6 @@ class TestAuthentication:
             sess['session_id'] = test_session_id
             sess['oauth_state'] = 'test-state'
         
-        # Remove the patch for creds_to_dict since we're storing the creds object directly
         response = client.get('/oauth/callback?state=test-state&code=auth-code')
         assert response.status_code == 302
         assert response.location == '/'
@@ -299,7 +297,6 @@ class TestSessionSizeAndLoops:
             mock_get_creds.return_value = mock_creds_obj
             mock_from_api.return_value = [Task(id='1', title='Test Task')]
             
-            # Remove the patch for creds_to_dict since we're storing the creds object directly
             # First call to /auth should succeed and store credentials
             response1 = client.get('/auth')
             assert response1.status_code == 302
