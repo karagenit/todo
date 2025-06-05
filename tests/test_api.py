@@ -31,7 +31,7 @@ class TestOAuthFlow:
         mock_flow_class.assert_called_once_with(
             "credentials.json",
             scopes=api.SCOPES,
-            redirect_uri="http://localhost:5001/oauth/callback"
+            redirect_uri="https://localhost:5001/oauth/callback"
         )
         mock_flow.authorization_url.assert_called_once_with(
             access_type="offline",
