@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session, url_for
 from datetime import datetime, timedelta
 from sort import task_sort_key, get_sorted_tasks
 from task import Task
@@ -72,7 +72,16 @@ def reload_tasks():
 def auth():
     try:
         existing_creds = get_user_data('creds')
-        creds = api.get_session_creds(existing_creds)
+        result = api.get_session_creds(existing_creds)
+        
+        # If result is a dict with auth_url, we need to redirect to Google
+        if isinstance(result, dict) and 'auth_url' in result:
+            # Store only state in session for the callback (flow is stored in api module)
+            session['oauth_state'] = result['state']
+            return redirect(result['auth_url'])
+        
+        # If result is credentials, proceed normally
+        creds = result
         set_user_data('creds', api.creds_to_dict(creds))
         tasks = tasklist.from_api(creds)
         set_user_data('tasks', [t.to_dict() for t in tasks])
@@ -80,6 +89,37 @@ def auth():
     except Exception as e:
         clear_user_data()
         return f"Authentication failed: {str(e)}", 500
+
+@app.route('/oauth/callback')
+def oauth_callback():
+    try:
+        # Get the state from session
+        stored_state = session.get('oauth_state')
+        
+        if not stored_state:
+            return "OAuth state not found. Please restart authentication.", 400
+        
+        # Verify state parameter
+        if request.args.get('state') != stored_state:
+            return "Invalid state parameter. Possible CSRF attack.", 400
+        
+        # Complete the OAuth flow
+        authorization_response = request.url
+        creds = api.complete_oauth_flow(stored_state, authorization_response)
+        
+        # Store credentials and load tasks
+        set_user_data('creds', api.creds_to_dict(creds))
+        tasks = tasklist.from_api(creds)
+        set_user_data('tasks', [t.to_dict() for t in tasks])
+        
+        # Clean up session
+        session.pop('oauth_state', None)
+        
+        return redirect('/')
+    except Exception as e:
+        clear_user_data()
+        session.pop('oauth_state', None)
+        return f"OAuth callback failed: {str(e)}", 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

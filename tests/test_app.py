@@ -58,8 +58,8 @@ class TestAuthentication:
 
     @patch('app.api.get_session_creds')
     @patch('app.tasklist.from_api')
-    def test_auth_success(self, mock_from_api, mock_get_creds, client, mock_creds, mock_tasks):
-        """Test successful authentication flow"""
+    def test_auth_success_with_existing_creds(self, mock_from_api, mock_get_creds, client, mock_creds, mock_tasks):
+        """Test successful authentication flow with existing valid credentials"""
         mock_creds_obj = Mock()
         mock_get_creds.return_value = mock_creds_obj
         # Return Task objects that will be converted to dicts
@@ -72,6 +72,22 @@ class TestAuthentication:
             assert response.location == '/'
 
     @patch('app.api.get_session_creds')
+    def test_auth_redirects_to_google(self, mock_get_creds, client):
+        """Test authentication flow redirects to Google when new auth is needed"""
+        mock_get_creds.return_value = {
+            'auth_url': 'https://accounts.google.com/oauth2/auth?param=value',
+            'state': 'test-state'
+        }
+        
+        response = client.get('/auth')
+        assert response.status_code == 302
+        assert 'accounts.google.com' in response.location
+        
+        # Verify state is stored in session
+        with client.session_transaction() as sess:
+            assert sess.get('oauth_state') == 'test-state'
+
+    @patch('app.api.get_session_creds')
     def test_auth_failure(self, mock_get_creds, client):
         """Test authentication failure handling"""
         mock_get_creds.side_effect = Exception("Auth failed")
@@ -79,6 +95,67 @@ class TestAuthentication:
         response = client.get('/auth')
         assert response.status_code == 500
         assert "Authentication failed" in response.get_data(as_text=True)
+
+    @patch('app.api.complete_oauth_flow')
+    @patch('app.tasklist.from_api')
+    def test_oauth_callback_success(self, mock_from_api, mock_complete_flow, client, mock_creds):
+        """Test successful OAuth callback handling"""
+        mock_creds_obj = Mock()
+        mock_complete_flow.return_value = mock_creds_obj
+        mock_tasks_objects = [Task(id='1', title='Test Task 1')]
+        mock_from_api.return_value = mock_tasks_objects
+        
+        # Set up session with state
+        test_session_id = 'test-oauth-callback'
+        import session
+        session.session_store[test_session_id] = {}
+        
+        with client.session_transaction() as sess:
+            sess['session_id'] = test_session_id
+            sess['oauth_state'] = 'test-state'
+        
+        with patch('app.api.creds_to_dict', return_value=mock_creds):
+            response = client.get('/oauth/callback?state=test-state&code=auth-code')
+            assert response.status_code == 302
+            assert response.location == '/'
+            
+            # Verify flow was completed with correct parameters
+            mock_complete_flow.assert_called_once_with('test-state', 'http://localhost/oauth/callback?state=test-state&code=auth-code')
+            
+            # Verify session was cleaned up
+            with client.session_transaction() as sess:
+                assert 'oauth_state' not in sess
+
+    def test_oauth_callback_missing_state(self, client):
+        """Test OAuth callback fails when no state is stored in session"""
+        response = client.get('/oauth/callback?state=test-state&code=auth-code')
+        assert response.status_code == 400
+        assert "OAuth state not found" in response.get_data(as_text=True)
+
+    def test_oauth_callback_invalid_state(self, client):
+        """Test OAuth callback fails when state parameter doesn't match"""
+        with client.session_transaction() as sess:
+            sess['oauth_state'] = 'stored-state'
+        
+        response = client.get('/oauth/callback?state=different-state&code=auth-code')
+        assert response.status_code == 400
+        assert "Invalid state parameter" in response.get_data(as_text=True)
+
+    @patch('app.api.complete_oauth_flow')
+    def test_oauth_callback_failure(self, mock_complete_flow, client):
+        """Test OAuth callback failure handling"""
+        mock_complete_flow.side_effect = Exception("OAuth failed")
+        
+        with client.session_transaction() as sess:
+            sess['oauth_state'] = 'test-state'
+        
+        response = client.get('/oauth/callback?state=test-state&code=auth-code')
+        assert response.status_code == 500
+        assert "OAuth callback failed" in response.get_data(as_text=True)
+        
+        # Verify session was cleaned up even on failure
+        with client.session_transaction() as sess:
+            assert 'oauth_state' not in sess
 
 class TestSessionManagement:
     def test_require_auth_decorator(self, client, mock_creds, mock_tasks):

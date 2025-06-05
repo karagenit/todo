@@ -6,13 +6,16 @@ from datetime import datetime
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
+from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import RefreshError
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/tasks"]
+
+# Temporary storage for OAuth flows (in production, use Redis or similar)
+_oauth_flows = {}
 
 def get_session_creds(existing_creds=None):
     """Gets credentials for session-based authentication (no file storage)."""
@@ -38,12 +41,30 @@ def get_session_creds(existing_creds=None):
         
         # If we need to, get new creds totally
         if should_reauth:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                "credentials.json", SCOPES
+            flow = Flow.from_client_secrets_file(
+                "credentials.json", 
+                scopes=SCOPES,
+                redirect_uri="http://localhost:5001/oauth/callback"
             )
-            creds = flow.run_local_server(port=0, access_type="offline", prompt="consent")
+            auth_url, state = flow.authorization_url(
+                access_type="offline",
+                prompt="consent"
+            )
+            # Store flow temporarily using state as key
+            _oauth_flows[state] = flow
+            # Return auth_url and state so the caller can redirect the user
+            return {"auth_url": auth_url, "state": state}
 
     return creds
+
+def complete_oauth_flow(state, authorization_response):
+    """Complete the OAuth flow with the authorization response."""
+    if state not in _oauth_flows:
+        raise ValueError("OAuth flow not found for state")
+    
+    flow = _oauth_flows.pop(state)  # Remove from storage after use
+    flow.fetch_token(authorization_response=authorization_response)
+    return flow.credentials
 
 def creds_to_dict(creds):
     """Convert credentials object to dict for session storage."""
