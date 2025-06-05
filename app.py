@@ -5,12 +5,11 @@ from flask import Flask, render_template, request, redirect
 from sort import get_sorted_tasks
 from task import Task
 from filter_args import FilterArgs
-from auth import get_session_creds
+from auth import get_session_creds, auth_bp
 import tasklist
 import summary
 from filter import filter_tasks
 from session import get_user_data, set_user_data, require_auth
-from auth import auth_bp
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')

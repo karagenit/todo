@@ -48,6 +48,11 @@ T: Time in Minutes
 - skip to next repetition w/o completing
 - dedupe - X possible duplicates found etc.
 
+- Pylint files
+- test plans for files, reorganize lots of test coverage
+- move requires_auth decorator into auth.py (and tests)
+- get rid of _oauth_flows and just store in session
+
 ## Devlog
 
 Getting access to the api was a pain. Went to google cloud console and opened project. https://console.cloud.google.com/apis/api/tasks.googleapis.com/credentials?inv=1&invt=Abijtg&project=seraphic-scarab-433719-k7
