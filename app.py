@@ -9,14 +9,45 @@ import tasklist
 import summary
 from filter import filter_tasks
 import os
+import uuid
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 
+# In-memory session store to avoid large cookies
+session_store = {}
+
+def get_session_id():
+    """Get or create session ID"""
+    if 'session_id' not in session:
+        session['session_id'] = str(uuid.uuid4())
+    return session['session_id']
+
+def get_user_data(key, default=None):
+    """Get user data from server-side session store"""
+    session_id = get_session_id()
+    if session_id not in session_store:
+        session_store[session_id] = {}
+    return session_store[session_id].get(key, default)
+
+def set_user_data(key, value):
+    """Set user data in server-side session store"""
+    session_id = get_session_id()
+    if session_id not in session_store:
+        session_store[session_id] = {}
+    session_store[session_id][key] = value
+
+def clear_user_data():
+    """Clear user data from server-side session store"""
+    session_id = get_session_id()
+    if session_id in session_store:
+        del session_store[session_id]
+    session.clear()
+
 def require_auth(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'creds' not in session or 'tasks' not in session:
+        if not get_user_data('creds') or not get_user_data('tasks'):
             return redirect('/auth')
         return f(*args, **kwargs)
     return decorated_function
@@ -24,7 +55,7 @@ def require_auth(f):
 @app.route('/')
 @require_auth
 def index():
-    tasks_data = session['tasks']
+    tasks_data = get_user_data('tasks', [])
     tasks = [Task.from_dict(t) if isinstance(t, dict) else t for t in tasks_data]
     summary_stats = summary.get_stats(tasks)
 
@@ -46,14 +77,14 @@ def index():
 @app.route('/update', methods=['POST'])
 @require_auth
 def update_task():
-    creds = api.get_session_creds(session['creds'])
-    tasks_data = session['tasks']
+    creds = api.get_session_creds(get_user_data('creds'))
+    tasks_data = get_user_data('tasks', [])
     tasks = [Task.from_dict(t) if isinstance(t, dict) else t for t in tasks_data]
     task = Task.from_form_submission(request.form)
     tasklist.upsert_task(creds, tasks, task)
     
     # Update session with serialized tasks
-    session['tasks'] = [t.to_dict() for t in tasks]
+    set_user_data('tasks', [t.to_dict() for t in tasks])
     
     # FIXME
     # For non-child tasks, we want to set the order of the task
@@ -70,22 +101,22 @@ def update_task():
 @app.route('/reload')
 @require_auth
 def reload_tasks():
-    creds = api.get_session_creds(session['creds'])
+    creds = api.get_session_creds(get_user_data('creds'))
     tasks = tasklist.from_api(creds)
-    session['tasks'] = [t.to_dict() for t in tasks]
+    set_user_data('tasks', [t.to_dict() for t in tasks])
     return redirect('/')
 
 @app.route('/auth')
 def auth():
     try:
-        existing_creds = session.get('creds')
+        existing_creds = get_user_data('creds')
         creds = api.get_session_creds(existing_creds)
-        session['creds'] = api.creds_to_dict(creds)
+        set_user_data('creds', api.creds_to_dict(creds))
         tasks = tasklist.from_api(creds)
-        session['tasks'] = [t.to_dict() for t in tasks]
+        set_user_data('tasks', [t.to_dict() for t in tasks])
         return redirect('/')
     except Exception as e:
-        session.clear()
+        clear_user_data()
         return f"Authentication failed: {str(e)}", 500
 
 if __name__ == '__main__':

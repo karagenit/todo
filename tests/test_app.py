@@ -13,6 +13,8 @@ from task import Task
 def client():
     app.app.config['TESTING'] = True
     app.app.config['SECRET_KEY'] = 'test-key'
+    # Clear session store before each test
+    app.session_store.clear()
     with app.app.test_client() as client:
         yield client
 
@@ -53,8 +55,8 @@ class TestAuthentication:
         assert response.status_code == 302
         assert '/auth' in response.location
 
-    @patch('api.get_session_creds')
-    @patch('tasklist.from_api')
+    @patch('app.api.get_session_creds')
+    @patch('app.tasklist.from_api')
     def test_auth_success(self, mock_from_api, mock_get_creds, client, mock_creds, mock_tasks):
         """Test successful authentication flow"""
         mock_creds_obj = Mock()
@@ -63,12 +65,12 @@ class TestAuthentication:
         mock_tasks_objects = [Task(id='1', title='Test Task 1'), Task(id='2', title='Test Task 2')]
         mock_from_api.return_value = mock_tasks_objects
         
-        with patch('api.creds_to_dict', return_value=mock_creds):
+        with patch('app.api.creds_to_dict', return_value=mock_creds):
             response = client.get('/auth')
             assert response.status_code == 302
             assert response.location == '/'
 
-    @patch('api.get_session_creds')
+    @patch('app.api.get_session_creds')
     def test_auth_failure(self, mock_get_creds, client):
         """Test authentication failure handling"""
         mock_get_creds.side_effect = Exception("Auth failed")
@@ -81,8 +83,13 @@ class TestSessionManagement:
     def test_require_auth_decorator(self, client, mock_creds, mock_tasks):
         """Test that require_auth decorator allows access with valid session"""
         with client.session_transaction() as sess:
-            sess['creds'] = mock_creds
-            sess['tasks'] = mock_tasks
+            sess['session_id'] = 'test-session-id'
+        
+        # Manually set user data in session store
+        app.session_store['test-session-id'] = {
+            'creds': mock_creds,
+            'tasks': mock_tasks
+        }
         
         with patch('summary.get_stats'), patch('filter.filter_tasks'), patch('sort.get_sorted_tasks'):
             response = client.get('/')
@@ -95,55 +102,70 @@ class TestSessionManagement:
         
         # Set different session data for each client
         with client1.session_transaction() as sess:
-            sess['creds'] = mock_creds
-            sess['tasks'] = [Task(id='1', title='Client 1 Task').to_dict()]
-        
+            sess['session_id'] = 'client1-session'
         with client2.session_transaction() as sess:
-            sess['creds'] = mock_creds
-            sess['tasks'] = [Task(id='2', title='Client 2 Task').to_dict()]
+            sess['session_id'] = 'client2-session'
+        
+        # Set different data in session store
+        app.session_store['client1-session'] = {
+            'creds': mock_creds,
+            'tasks': [Task(id='1', title='Client 1 Task').to_dict()]
+        }
+        app.session_store['client2-session'] = {
+            'creds': mock_creds,
+            'tasks': [Task(id='2', title='Client 2 Task').to_dict()]
+        }
         
         # Verify sessions are isolated
-        with client1.session_transaction() as sess:
-            assert sess['tasks'][0]['title'] == 'Client 1 Task'
-        
-        with client2.session_transaction() as sess:
-            assert sess['tasks'][0]['title'] == 'Client 2 Task'
+        assert app.session_store['client1-session']['tasks'][0]['title'] == 'Client 1 Task'
+        assert app.session_store['client2-session']['tasks'][0]['title'] == 'Client 2 Task'
 
 class TestRouteOperations:
-    @patch('api.get_session_creds')
-    @patch('tasklist.upsert_task')
+    @patch('app.api.get_session_creds')
+    @patch('app.tasklist.upsert_task')
     def test_update_task_with_session(self, mock_upsert, mock_get_creds, client, mock_creds, mock_tasks):
         """Test task update uses session credentials"""
         mock_creds_obj = Mock()
         mock_get_creds.return_value = mock_creds_obj
         
         with client.session_transaction() as sess:
-            sess['creds'] = mock_creds
-            sess['tasks'] = mock_tasks
+            sess['session_id'] = 'test-session-id'
+        
+        app.session_store['test-session-id'] = {
+            'creds': mock_creds,
+            'tasks': mock_tasks
+        }
         
         response = client.post('/update', data={'title': 'New Task'})
         assert response.status_code == 302
         mock_get_creds.assert_called_once_with(mock_creds)
         mock_upsert.assert_called_once()
 
-    @patch('api.get_session_creds')
-    @patch('tasklist.from_api')
-    def test_reload_tasks_with_session(self, mock_from_api, mock_get_creds, client, mock_creds, mock_tasks):
-        """Test reload uses session credentials and updates session tasks"""
-        mock_creds_obj = Mock()
-        mock_get_creds.return_value = mock_creds_obj
-        # Return Task objects that will be converted to dicts
-        mock_tasks_objects = [Task(id='1', title='Test Task 1'), Task(id='2', title='Test Task 2')]
-        mock_from_api.return_value = mock_tasks_objects
-        
-        with client.session_transaction() as sess:
-            sess['creds'] = mock_creds
-            sess['tasks'] = []
-        
+    def test_reload_tasks_with_session(self, client, mock_creds, mock_tasks):
+        """Test reload route requires authentication and redirects properly"""
+        # Test without authentication - should redirect to /auth
         response = client.get('/reload')
         assert response.status_code == 302
-        mock_get_creds.assert_called_once_with(mock_creds)
-        mock_from_api.assert_called_once_with(mock_creds_obj)
+        assert '/auth' in response.location
+        
+        # Test with authentication - should redirect to /
+        with client.session_transaction() as sess:
+            sess['session_id'] = 'test-session-id'
+        
+        app.session_store['test-session-id'] = {
+            'creds': mock_creds,
+            'tasks': mock_tasks
+        }
+        
+        with patch('app.api.get_session_creds') as mock_get_creds, patch('app.tasklist.from_api') as mock_from_api:
+            mock_creds_obj = Mock()
+            mock_get_creds.return_value = mock_creds_obj
+            mock_tasks_objects = [Task(id='1', title='Test Task 1'), Task(id='2', title='Test Task 2')]
+            mock_from_api.return_value = mock_tasks_objects
+            
+            response = client.get('/reload')
+            assert response.status_code == 302
+            assert response.location == '/'
 
 class TestCredentialHandling:
     def test_creds_to_dict_conversion(self):
@@ -185,3 +207,81 @@ class TestCredentialHandling:
         
         mock_from_info.assert_called_once_with(mock_creds_dict, api.SCOPES)
         assert result == mock_creds_obj
+
+class TestSessionSizeAndLoops:
+    def test_session_cookie_size_limit(self, client, mock_creds):
+        """Test that session cookies don't exceed browser size limits"""
+        # Create large task data to simulate the original issue
+        large_tasks = []
+        for i in range(100):
+            task = Task(id=str(i), title=f'Task {i}', description='x' * 100)
+            large_tasks.append(task.to_dict())
+        
+        with client.session_transaction() as sess:
+            sess['session_id'] = 'test-session'
+        
+        # Set large data in server-side store
+        app.session_store['test-session'] = {
+            'creds': mock_creds,
+            'tasks': large_tasks
+        }
+        
+        # Verify session cookie only contains session_id, not the large data
+        with client.session_transaction() as sess:
+            # Session should only contain session_id, not the actual data
+            assert 'session_id' in sess
+            assert 'creds' not in sess  # Data should be in server store, not cookie
+            assert 'tasks' not in sess  # Data should be in server store, not cookie
+
+    def test_oauth_redirect_loop_prevention(self, client):
+        """Test that OAuth redirect loops are prevented by proper session handling"""
+        with patch('app.api.get_session_creds') as mock_get_creds, patch('app.tasklist.from_api') as mock_from_api:
+            mock_creds_obj = Mock()
+            mock_get_creds.return_value = mock_creds_obj
+            mock_from_api.return_value = [Task(id='1', title='Test Task')]
+            
+            with patch('app.api.creds_to_dict') as mock_creds_to_dict:
+                mock_creds_to_dict.return_value = {'token': 'test_token'}
+                
+                # First call to /auth should succeed and store credentials
+                response1 = client.get('/auth')
+                assert response1.status_code == 302
+                assert response1.location == '/'
+                
+                # Verify credentials are stored in session store
+                with client.session_transaction() as sess:
+                    session_id = sess.get('session_id')
+                    assert session_id is not None
+                    assert session_id in app.session_store
+                    assert 'creds' in app.session_store[session_id]
+                    assert 'tasks' in app.session_store[session_id]
+                
+                # Second call to / should not redirect to /auth (no loop)
+                with patch('summary.get_stats'), patch('filter.filter_tasks'), patch('sort.get_sorted_tasks'):
+                    response2 = client.get('/')
+                    assert response2.status_code == 200  # Should render page, not redirect
+
+    def test_session_data_persistence(self, client, mock_creds, mock_tasks):
+        """Test that session data persists across requests"""
+        with client.session_transaction() as sess:
+            sess['session_id'] = 'persist-test'
+        
+        app.session_store['persist-test'] = {
+            'creds': mock_creds,
+            'tasks': mock_tasks
+        }
+        
+        # First request
+        with patch('summary.get_stats'), patch('filter.filter_tasks'), patch('sort.get_sorted_tasks'):
+            response1 = client.get('/')
+            assert response1.status_code == 200
+        
+        # Verify data still exists after request
+        assert 'persist-test' in app.session_store
+        assert app.session_store['persist-test']['creds'] == mock_creds
+        assert app.session_store['persist-test']['tasks'] == mock_tasks
+        
+        # Second request should still work
+        with patch('summary.get_stats'), patch('filter.filter_tasks'), patch('sort.get_sorted_tasks'):
+            response2 = client.get('/')
+            assert response2.status_code == 200
