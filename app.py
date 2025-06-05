@@ -17,8 +17,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-producti
 @app.route('/')
 @require_auth
 def index():
-    tasks_data = get_user_data('tasks', [])
-    tasks = [Task.from_dict(t) if isinstance(t, dict) else t for t in tasks_data]
+    tasks = get_user_data('tasks', [])
     summary_stats = summary.get_stats(tasks)
 
     filter_args = FilterArgs(request.args)
@@ -40,13 +39,12 @@ def index():
 @require_auth
 def update_task():
     creds = api.get_session_creds(get_user_data('creds'))
-    tasks_data = get_user_data('tasks', [])
-    tasks = [Task.from_dict(t) if isinstance(t, dict) else t for t in tasks_data]
+    tasks = get_user_data('tasks', [])
     task = Task.from_form_submission(request.form)
     tasklist.upsert_task(creds, tasks, task)
     
-    # Update session with serialized tasks
-    set_user_data('tasks', [t.to_dict() for t in tasks])
+    # Update session with tasks directly
+    set_user_data('tasks', tasks)
     
     # FIXME
     # For non-child tasks, we want to set the order of the task
@@ -65,7 +63,7 @@ def update_task():
 def reload_tasks():
     creds = api.get_session_creds(get_user_data('creds'))
     tasks = tasklist.from_api(creds)
-    set_user_data('tasks', [t.to_dict() for t in tasks])
+    set_user_data('tasks', tasks)
     return redirect('/')
 
 @app.route('/auth')
@@ -82,10 +80,9 @@ def auth():
         
         # If result is credentials, proceed normally
         creds = result
-        # Store the credentials object directly instead of converting to dict
         set_user_data('creds', creds)
         tasks = tasklist.from_api(creds)
-        set_user_data('tasks', [t.to_dict() for t in tasks])
+        set_user_data('tasks', tasks)
         return redirect('/')
     except Exception as e:
         clear_user_data()
@@ -108,10 +105,10 @@ def oauth_callback():
         authorization_response = request.url
         creds = api.complete_oauth_flow(stored_state, authorization_response)
         
-        # Store credentials object directly and load tasks
+        # Store credentials and load tasks
         set_user_data('creds', creds)
         tasks = tasklist.from_api(creds)
-        set_user_data('tasks', [t.to_dict() for t in tasks])
+        set_user_data('tasks', tasks)
         
         # Clean up session
         session.pop('oauth_state', None)

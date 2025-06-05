@@ -32,9 +32,10 @@ def mock_creds():
 
 @pytest.fixture
 def mock_tasks():
+    # Return Task objects directly instead of dictionaries
     return [
-        Task(id='1', title='Test Task 1').to_dict(),
-        Task(id='2', title='Test Task 2').to_dict()
+        Task(id='1', title='Test Task 1'),
+        Task(id='2', title='Test Task 2')
     ]
 
 class TestAuthentication:
@@ -62,9 +63,8 @@ class TestAuthentication:
         """Test successful authentication flow with existing valid credentials"""
         mock_creds_obj = Mock()
         mock_get_creds.return_value = mock_creds_obj
-        # Return Task objects that will be converted to dicts
-        mock_tasks_objects = [Task(id='1', title='Test Task 1'), Task(id='2', title='Test Task 2')]
-        mock_from_api.return_value = mock_tasks_objects
+        # Return Task objects directly
+        mock_from_api.return_value = mock_tasks
         
         response = client.get('/auth')
         assert response.status_code == 302
@@ -101,8 +101,7 @@ class TestAuthentication:
         """Test successful OAuth callback handling"""
         mock_creds_obj = Mock()
         mock_complete_flow.return_value = mock_creds_obj
-        mock_tasks_objects = [Task(id='1', title='Test Task 1')]
-        mock_from_api.return_value = mock_tasks_objects
+        mock_from_api.return_value = [Task(id='1', title='Test Task 1')]
         
         # Set up session with state
         test_session_id = 'test-oauth-callback'
@@ -182,19 +181,23 @@ class TestSessionManagement:
         with client2.session_transaction() as sess:
             sess['session_id'] = 'client2-session'
         
+        # Create Task objects for each client
+        client1_task = Task(id='1', title='Client 1 Task')
+        client2_task = Task(id='2', title='Client 2 Task')
+        
         # Set different data in session store
         session.session_store['client1-session'] = {
             'creds': mock_creds,
-            'tasks': [Task(id='1', title='Client 1 Task').to_dict()]
+            'tasks': [client1_task]
         }
         session.session_store['client2-session'] = {
             'creds': mock_creds,
-            'tasks': [Task(id='2', title='Client 2 Task').to_dict()]
+            'tasks': [client2_task]
         }
         
         # Verify sessions are isolated
-        assert session.session_store['client1-session']['tasks'][0]['title'] == 'Client 1 Task'
-        assert session.session_store['client2-session']['tasks'][0]['title'] == 'Client 2 Task'
+        assert session.session_store['client1-session']['tasks'][0].title == 'Client 1 Task'
+        assert session.session_store['client2-session']['tasks'][0].title == 'Client 2 Task'
 
 class TestRouteOperations:
     @patch('app.api.get_session_creds')
@@ -272,7 +275,7 @@ class TestSessionSizeAndLoops:
         large_tasks = []
         for i in range(100):
             task = Task(id=str(i), title=f'Task {i}', description='x' * 100)
-            large_tasks.append(task.to_dict())
+            large_tasks.append(task)
         
         with client.session_transaction() as sess:
             sess['session_id'] = 'test-session'
