@@ -82,7 +82,8 @@ def auth():
         
         # If result is credentials, proceed normally
         creds = result
-        set_user_data('creds', api.creds_to_dict(creds))
+        # Store the credentials object directly instead of converting to dict
+        set_user_data('creds', creds)
         tasks = tasklist.from_api(creds)
         set_user_data('tasks', [t.to_dict() for t in tasks])
         return redirect('/')
@@ -107,8 +108,8 @@ def oauth_callback():
         authorization_response = request.url
         creds = api.complete_oauth_flow(stored_state, authorization_response)
         
-        # Store credentials and load tasks
-        set_user_data('creds', api.creds_to_dict(creds))
+        # Store credentials object directly and load tasks
+        set_user_data('creds', creds)
         tasks = tasklist.from_api(creds)
         set_user_data('tasks', [t.to_dict() for t in tasks])
         

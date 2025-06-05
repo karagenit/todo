@@ -67,17 +67,6 @@ def complete_oauth_flow(state, authorization_response):
     flow.fetch_token(authorization_response=authorization_response)
     return flow.credentials
 
-def creds_to_dict(creds):
-    """Convert credentials object to dict for session storage."""
-    return {
-        'token': creds.token,
-        'refresh_token': creds.refresh_token,
-        'token_uri': creds.token_uri,
-        'client_id': creds.client_id,
-        'client_secret': creds.client_secret,
-        'scopes': creds.scopes
-    }
-
 # TODO for all these API methods - creds could be expired, need to check this and re-auth in that case. May need to store creds as a global or session variable.
 
 def get_tasks(creds):

@@ -66,10 +66,10 @@ class TestAuthentication:
         mock_tasks_objects = [Task(id='1', title='Test Task 1'), Task(id='2', title='Test Task 2')]
         mock_from_api.return_value = mock_tasks_objects
         
-        with patch('app.api.creds_to_dict', return_value=mock_creds):
-            response = client.get('/auth')
-            assert response.status_code == 302
-            assert response.location == '/'
+        # Remove the patch for creds_to_dict since we're storing the creds object directly
+        response = client.get('/auth')
+        assert response.status_code == 302
+        assert response.location == '/'
 
     @patch('app.api.get_session_creds')
     def test_auth_redirects_to_google(self, mock_get_creds, client):
@@ -114,17 +114,17 @@ class TestAuthentication:
             sess['session_id'] = test_session_id
             sess['oauth_state'] = 'test-state'
         
-        with patch('app.api.creds_to_dict', return_value=mock_creds):
-            response = client.get('/oauth/callback?state=test-state&code=auth-code')
-            assert response.status_code == 302
-            assert response.location == '/'
-            
-            # Verify flow was completed with correct parameters
-            mock_complete_flow.assert_called_once_with('test-state', 'http://localhost/oauth/callback?state=test-state&code=auth-code')
-            
-            # Verify session was cleaned up
-            with client.session_transaction() as sess:
-                assert 'oauth_state' not in sess
+        # Remove the patch for creds_to_dict since we're storing the creds object directly
+        response = client.get('/oauth/callback?state=test-state&code=auth-code')
+        assert response.status_code == 302
+        assert response.location == '/'
+        
+        # Verify flow was completed with correct parameters
+        mock_complete_flow.assert_called_once_with('test-state', 'http://localhost/oauth/callback?state=test-state&code=auth-code')
+        
+        # Verify session was cleaned up
+        with client.session_transaction() as sess:
+            assert 'oauth_state' not in sess
 
     def test_oauth_callback_missing_state(self, client):
         """Test OAuth callback fails when no state is stored in session"""
@@ -246,25 +246,6 @@ class TestRouteOperations:
             assert response.location == '/'
 
 class TestCredentialHandling:
-    def test_creds_to_dict_conversion(self):
-        """Test credential object to dict conversion"""
-        mock_creds = Mock()
-        mock_creds.token = 'test_token'
-        mock_creds.refresh_token = 'test_refresh_token'
-        mock_creds.token_uri = 'https://oauth2.googleapis.com/token'
-        mock_creds.client_id = 'test_client_id'
-        mock_creds.client_secret = 'test_client_secret'
-        mock_creds.scopes = ['https://www.googleapis.com/auth/tasks']
-        
-        result = api.creds_to_dict(mock_creds)
-        
-        assert result['token'] == 'test_token'
-        assert result['refresh_token'] == 'test_refresh_token'
-        assert result['token_uri'] == 'https://oauth2.googleapis.com/token'
-        assert result['client_id'] == 'test_client_id'
-        assert result['client_secret'] == 'test_client_secret'
-        assert result['scopes'] == ['https://www.googleapis.com/auth/tasks']
-
     @patch('google.oauth2.credentials.Credentials.from_authorized_user_info')
     def test_session_creds_from_dict(self, mock_from_info):
         """Test converting dict back to credentials object"""
@@ -318,26 +299,24 @@ class TestSessionSizeAndLoops:
             mock_get_creds.return_value = mock_creds_obj
             mock_from_api.return_value = [Task(id='1', title='Test Task')]
             
-            with patch('app.api.creds_to_dict') as mock_creds_to_dict:
-                mock_creds_to_dict.return_value = {'token': 'test_token'}
-                
-                # First call to /auth should succeed and store credentials
-                response1 = client.get('/auth')
-                assert response1.status_code == 302
-                assert response1.location == '/'
-                
-                # Verify credentials are stored in session store
-                with client.session_transaction() as sess:
-                    session_id = sess.get('session_id')
-                    assert session_id is not None
-                    assert session_id in session.session_store
-                    assert 'creds' in session.session_store[session_id]
-                    assert 'tasks' in session.session_store[session_id]
-                
-                # Second call to / should not redirect to /auth (no loop)
-                with patch('summary.get_stats'), patch('filter.filter_tasks'), patch('sort.get_sorted_tasks'):
-                    response2 = client.get('/')
-                    assert response2.status_code == 200  # Should render page, not redirect
+            # Remove the patch for creds_to_dict since we're storing the creds object directly
+            # First call to /auth should succeed and store credentials
+            response1 = client.get('/auth')
+            assert response1.status_code == 302
+            assert response1.location == '/'
+            
+            # Verify credentials are stored in session store
+            with client.session_transaction() as sess:
+                session_id = sess.get('session_id')
+                assert session_id is not None
+                assert session_id in session.session_store
+                assert 'creds' in session.session_store[session_id]
+                assert 'tasks' in session.session_store[session_id]
+            
+            # Second call to / should not redirect to /auth (no loop)
+            with patch('summary.get_stats'), patch('filter.filter_tasks'), patch('sort.get_sorted_tasks'):
+                response2 = client.get('/')
+                assert response2.status_code == 200  # Should render page, not redirect
 
     def test_session_data_persistence(self, client, mock_creds, mock_tasks):
         """Test that session data persists across requests"""
