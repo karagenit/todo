@@ -5,7 +5,7 @@ from flask import Flask, render_template, request, redirect
 from sort import get_sorted_tasks
 from task import Task
 from filter_args import FilterArgs
-import api
+from auth import get_session_creds
 import tasklist
 import summary
 from filter import filter_tasks
@@ -47,7 +47,7 @@ def index():
 @require_auth
 def update_task():
     """Update a task based on form submission."""
-    creds = api.get_session_creds(get_user_data('creds'))
+    creds = get_session_creds(get_user_data('creds'))
     tasks = get_user_data('tasks', [])
     task = Task.from_form_submission(request.form)
     tasklist.upsert_task(creds, tasks, task)
@@ -70,7 +70,7 @@ def update_task():
 @require_auth
 def reload_tasks():
     """Reload tasks from the API."""
-    creds = api.get_session_creds(get_user_data('creds'))
+    creds = get_session_creds(get_user_data('creds'))
     tasks = tasklist.from_api(creds)
     set_user_data('tasks', tasks)
     return redirect('/')
