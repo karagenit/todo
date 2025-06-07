@@ -13,6 +13,8 @@
         <button type="submit" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded text-sm">Reload Tasks</button>
     </form>
 
+    <!-- {{ template("task.html") }} -->
+
     <!-- todo move all this js into a js file -->
     <form action="/" method="GET" class="mt-4"> <!-- could do onsubmit form.search.removeAttribute('name') to clear it from url params -->
         <input type="text" name="search" value="{{ filter_args.search }}" placeholder="Search tasks..." class="border border-gray-400 rounded px-2 py-1 text-sm">
