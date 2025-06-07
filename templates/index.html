@@ -13,8 +13,6 @@
         <button type="submit" class="border border-gray-500 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded text-sm">Reload Tasks</button>
     </form>
 
-    <!-- {{ template("task.html") }} -->
-
     <!-- todo move all this js into a js file -->
     <form action="/" method="GET" class="mt-4"> <!-- could do onsubmit form.search.removeAttribute('name') to clear it from url params -->
         <input type="text" name="search" value="{{ filter_args.search }}" placeholder="Search tasks..." class="border border-gray-400 rounded px-2 py-1 text-sm">
@@ -40,28 +38,8 @@
             <option value="100" {% if filter_args.count == 100 %}selected{% endif %}>100</option>
         </select>
     </form>        
-    <table class="mt-4">
-        <tr class="bg-gray-200">
-            <th class="border border-gray-500 p-1">P3</th>
-            <th class="border border-gray-500 p-1">P2</th>
-            <th class="border border-gray-500 p-1">P1</th>
-            <th class="border border-gray-500 p-1">P0</th>
-            <th class="border border-gray-500 p-1">Overdue</th>
-            <th class="border border-gray-500 p-1">Due Today</th>
-            <th class="border border-gray-500 p-1">Due This Week</th>
-            <th class="border border-gray-500 p-1">Due This Month</th>
-        </tr>
-        <tr>
-            <td class="border border-gray-500 p-1">{{ stats.p3 }}</td>
-            <td class="border border-gray-500 p-1">{{ stats.p2 }}</td>
-            <td class="border border-gray-500 p-1">{{ stats.p1 }}</td>
-            <td class="border border-gray-500 p-1">{{ stats.p0 }}</td>
-            <td class="border border-gray-500 p-1">{{ stats.overdue }}</td>
-            <td class="border border-gray-500 p-1">{{ stats.today }}</td>
-            <td class="border border-gray-500 p-1">{{ stats.week }}</td>
-            <td class="border border-gray-500 p-1">{{ stats.month }}</td>
-        </tr>
-    </table>     
+    
+    {{ template("stats.html", stats=stats) }}
     
     {% for task in tasks %}
     <div class="border border-gray-500 rounded flex flex-col max-w-[48em] p-2 mt-4">
