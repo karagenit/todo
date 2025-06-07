@@ -5,12 +5,12 @@ from flask import Flask, render_template, request, redirect
 from sort import get_sorted_tasks
 from task import Task
 from filter_args import FilterArgs
-from auth import get_session_creds
+from auth import get_session_creds, auth_bp
 import tasklist
 import summary
 from filter import filter_tasks
 from session import get_user_data, set_user_data, require_auth
-from auth import auth_bp
+from markupsafe import Markup
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
@@ -74,6 +74,12 @@ def reload_tasks():
     tasks = tasklist.from_api(creds)
     set_user_data('tasks', tasks)
     return redirect('/')
+
+@app.context_processor
+def add_to_context__render_template():
+    def render_template_safe(template_name, **kwargs):
+        return Markup(render_template(template_name, **kwargs))
+    return dict(template=render_template_safe)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001, ssl_context='adhoc')
