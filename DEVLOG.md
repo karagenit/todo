@@ -41,6 +41,7 @@ T: Time in Minutes
 - test plans for files, reorganize lots of test coverage
 - move requires_auth decorator into auth.py (and tests)
 - get rid of _oauth_flows and just store in session
+- fetch default tasklist ID dynamically instead of hardcoding it in api.py and reauth.py
 
 ## Devlog
 
