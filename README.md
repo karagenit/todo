@@ -1,4 +1,4 @@
-# Todo Task Manager
+# Google Task Manager
 
 A Flask web application that provides an enhanced interface for Google Tasks with additional features like custom metadata, advanced filtering, and task recommendations.
 
