@@ -43,6 +43,10 @@ T: Time in Minutes
 - get rid of _oauth_flows and just store in session
 - fetch default tasklist ID dynamically instead of hardcoding it in api.py and reauth.py
 
+- bug: first oauth attempt after a while, has an old session cookie it tries to auth from but fails. need to retry auth. not sure how to fix
+- bug: complete a repeating task with "repeat 1 day after due" that was due a month ago, will create a second task that's due a month ago as well (1 day after) - the next due date calculation should use max(last due date, current date) to avoid this
+- feature: allow completing from google UIs. Add "#Completed" attribute. Fetch completed tasks from API and look for ones without "#Completed" tag. Handle repeat etc. for those, then add "#Completed" to them. 
+
 ## Devlog
 
 Getting access to the api was a pain. Went to google cloud console and opened project. https://console.cloud.google.com/apis/api/tasks.googleapis.com/credentials?inv=1&invt=Abijtg&project=seraphic-scarab-433719-k7
