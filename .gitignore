@@ -5,3 +5,4 @@ tests/__pycache__/*
 *.json
 *.pyc
 .coverage
+.DS_Store
