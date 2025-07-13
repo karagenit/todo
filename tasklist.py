@@ -35,7 +35,8 @@ def insert_task(creds, tasks, task):
     task.id = result['id']
     if task.parent_id:
         api.move_task(creds, task.id, task.parent_id, None)
-    tasks.append(task)
+        # TODO we don't want to prepend child tasks, we want to insert them in the array right after the parent (this is how google sorts them by default)
+    tasks.insert(0, task)
 
 def delete_task(creds, tasks, task):
     # FIXME this throws a 500 internal server error on google's side...

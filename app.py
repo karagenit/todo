@@ -11,6 +11,7 @@ import summary
 from filter import filter_tasks
 from session import get_user_data, set_user_data, require_auth
 from markupsafe import Markup
+from reorder import reposition_updated_task
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
@@ -51,18 +52,12 @@ def update_task():
     tasks = get_user_data('tasks', [])
     task = Task.from_form_submission(request.form)
     tasklist.upsert_task(creds, tasks, task)
+    
+    # if not task.parent_id and not task.completed:
+        # TODO this isn't working as expected on the google list, need to debug
+        # reposition_updated_task(creds, tasks, task)
 
-    # Update session with tasks directly
     set_user_data('tasks', tasks)
-
-    # FIXME
-    # For non-child tasks, we want to set the order of the task
-    # if not parent_id:
-    #     sorted_tasks = sorted([task for task in tasks if not task.get('parent')], key=task_sort_key)
-    #     task_index = next((i for i, task in enumerate(sorted_tasks) if task['id'] == task_id), -1)
-    #     if task_index > 0:
-    #         previous_task = sorted_tasks[task_index - 1]
-    #         move_task(creds, task_id, None, previous_task['id'])
 
     return redirect('/' + FilterArgs(request.args).to_url_params())
 
