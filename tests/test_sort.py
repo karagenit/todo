@@ -90,3 +90,24 @@ def test_get_sorted_tasks():
 
 def test_get_sorted_tasks_empty():
     assert get_sorted_tasks([]) == []
+
+def test_p3_tasks_with_different_date_configurations():
+    today = datetime.now().date()
+    tomorrow = today + timedelta(days=1)
+    due_in_10_days = today + timedelta(days=10)
+    
+    tasks = [
+        Task(title='P3 with due date', priority=3, due_date=due_in_10_days),
+        Task(title='P3 with start tomorrow', priority=3, start_date=tomorrow),
+        Task(title='P3 no dates', priority=3)
+    ]
+    
+    sorted_tasks = get_sorted_tasks(tasks)
+    
+    # Expected order based on calculated due dates:
+    # 1. P3 no dates (today + 7 days)
+    # 2. P3 starts tomorrow (tomorrow + 7 days) 
+    # 3. P3 with explicit due date (today + 10 days)
+    assert sorted_tasks[0].title == 'P3 no dates'
+    assert sorted_tasks[1].title == 'P3 with start tomorrow'
+    assert sorted_tasks[2].title == 'P3 with due date'
