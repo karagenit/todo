@@ -7,9 +7,45 @@ from datetime import datetime, timedelta, date
 
 # TODO maybe this could be a TaskList class, where it stores the creds inside it? That way we don't have to have the global creds we always pass in...
 
+# TODO clean this up once we're sure it's working for a while
+def debug_ordering(items):
+    """
+    Debug function to analyze task ordering from Google Tasks API.
+    
+    Args:
+        items: List of task items from API responses
+    """
+    print("=== DEBUG: Task Ordering Analysis ===")
+    
+    print(f"Total tasks fetched: {len(items)}")
+    
+    # Print first 10 tasks for comparison with UI
+    print("\nFirst 10 tasks from API:")
+    for i, task in enumerate(items[:10]):
+        print(f"{i+1}. {task.get('title', 'No title')} (ID: {task.get('id', 'No ID')})")
+    
+    # Count tasks with position field and print first 10 position values
+    tasks_with_position = [task for task in items if 'position' in task]
+    print(f"\nTasks with position field: {len(tasks_with_position)} out of {len(items)}")
+    
+    print("\nFirst 10 position values:")
+    for i, task in enumerate(tasks_with_position[:10]):
+        print(f"{i+1}. {task.get('title', 'No title')} - Position: {task.get('position')}")
+    
+    # Check if tasks are in position field order
+    positions = [task.get('position') for task in items if 'position' in task]
+    is_in_order = all(positions[i] <= positions[i+1] for i in range(len(positions)-1))
+    print(f"\nTasks in position field order: {is_in_order}")
+    
+    print("=== END DEBUG ===\n")
+
 def from_api(creds) -> List[Task]:
     api_responses = api.get_all_tasks(creds)
     items = [item for response in api_responses for item in response.get("items", [])]
+    # Sort by position field to maintain proper order (Google API returns by last updated, not position)
+    # TODO might be better to store position on Task and sort when needed so we don't have to worry about keeping tasks in the correct UI order
+    items.sort(key=lambda x: x.get('position', ''))
+    debug_ordering(items)
     return [Task.from_api_response(item) for item in items]
 
 def upsert_task(creds, tasks, task):

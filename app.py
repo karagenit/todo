@@ -53,9 +53,9 @@ def update_task():
     task = Task.from_form_submission(request.form)
     tasklist.upsert_task(creds, tasks, task)
     
-    # if not task.parent_id and not task.completed:
+    if not task.parent_id and not task.completed:
         # TODO this isn't working as expected on the google list, need to debug
-        # reposition_updated_task(creds, tasks, task)
+        reposition_updated_task(creds, tasks, task)
 
     set_user_data('tasks', tasks)
 

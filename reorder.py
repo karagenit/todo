@@ -24,6 +24,9 @@ def reposition_updated_task(creds, tasks, updated_task):
     # Find the position of our updated task in the sorted order
     updated_task_index = next((i for i, task in enumerate(sorted_tasks) if task.id == updated_task.id), -1)
     
+    # TODO clean up this debugging later
+    print(f"this tasks sort index: {updated_task_index}")
+
     if updated_task_index == -1:
         # Should not happen, but fallback to appending at end
         tasks.append(updated_task)
@@ -38,9 +41,12 @@ def reposition_updated_task(creds, tasks, updated_task):
         # Find this task's position in the sorted order
         task_sorted_index = next((j for j, sorted_task in enumerate(sorted_tasks) if sorted_task.id == task.id), -1)
         
+        print(f"{task.title} ({task_sorted_index})")
+        
         # If this task should come after our updated task in sorted order,
         # insert our updated task before it
         if task_sorted_index > updated_task_index:
+            print(f"inserting before: {task.title} ({task_sorted_index})")
             insertion_index = i
             break
     

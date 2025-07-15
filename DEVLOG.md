@@ -173,3 +173,11 @@ Come up with a step-by-step plan to complete this refactor. At a minimum, we sho
 - No cross-user data leakage
 - Session management functions properly
 - All routes protected appropriately
+
+## July 15, 2025
+
+Discovered a critical issue with task ordering. The Google Tasks API documentation doesn't clearly explain what order tasks are returned in. Initially assumed it was by position field (which would match the Google Tasks UI ordering), but debugging revealed that the API actually returns tasks in order of last updated datetime, not position. This was causing sorting inconsistencies where tasks appeared in different orders in our app versus the Google Tasks UI.
+
+Fixed by explicitly sorting the items array by position field in `from_api()` before converting to Task objects. This ensures our app maintains the same task order as the Google Tasks UI, regardless of when tasks were last updated.
+
+The confusion arose because the first few tasks happened to have positions that matched their last-updated order, making it appear the API was returning them in position order when it was actually coincidental.
