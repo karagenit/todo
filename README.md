@@ -91,3 +91,7 @@ The application supports multiple users through session-based authentication. Ea
 - `tasklist.py`: Google Tasks API integration
 - `filter.py`: Task filtering logic
 - `sort.py`: Task sorting and recommendations
+
+# TODO
+
+If you try to access the app via 127.0.0.1 it won't ever find the session oauth state. You have to connect via localhost. No idea why.
